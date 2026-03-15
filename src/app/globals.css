@@ -37,7 +37,7 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not(.light) {
       --bg: #1F2937;
       --bg2: #111827;
       --bg3: #0F172A;
@@ -46,6 +46,16 @@
       --txt3: #6B7280;
       --bdr: rgba(255, 255, 255, 0.08);
     }
+  }
+
+  html.dark {
+    --bg: #1F2937;
+    --bg2: #111827;
+    --bg3: #0F172A;
+    --txt: #F9FAFB;
+    --txt2: #9CA3AF;
+    --txt3: #6B7280;
+    --bdr: rgba(255, 255, 255, 0.08);
   }
 
   * {
