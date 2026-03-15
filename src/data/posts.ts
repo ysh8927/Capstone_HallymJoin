@@ -65,6 +65,30 @@ export const POSTS: Post[] = [
     ],
   },
 
+  // ── 홀로그램 (학술) ───────────────────────────────
+  {
+    id: 'hologram-1',
+    clubId: 'hologram',
+    category: 'notice',
+    title: '2025 AR/VR 기초 스터디 모집',
+    body: `<p>안녕하세요, 홀로그램 동아리입니다!</p>
+<div class="notice-box">📍 첫 모임: 3월 18일(화) 오후 5시 | IT관 XR 실습실</div>
+<p>이번 학기 AR·VR 기초 스터디를 새로 시작합니다. 관련 경험이 없어도 괜찮습니다!</p>`,
+    author: '박시온',
+    authorRole: '회장',
+    authorGrade: '3학년',
+    authorColor: '#06B6D4',
+    date: '2025.03.11',
+    views: 143,
+    likes: 21,
+    isPinned: true,
+    hasImage: false,
+    comments: [
+      { id: 'c-holo1', author: '이준하', authorColor: '#8B5CF6', text: '꼭 참여하고 싶어요! 구글폼 링크 있나요?', time: '1일 전', likes: 3 },
+      { id: 'c-holo2', author: '박시온', authorColor: '#06B6D4', authorRole: '회장', text: '공지 채널에 올려뒀어요 😊', time: '1일 전', likes: 2 },
+    ],
+  },
+
   // ── 한빛사진회 ─────────────────────────────────────
   {
     id: 'photo-1',
@@ -151,49 +175,26 @@ export const POSTS: Post[] = [
     ],
   },
 
-  // ── 해담 (토론) ─────────────────────────────────────
+  // ── GIVE (봉사) ──────────────────────────────────────
   {
-    id: 'haedam-1',
-    clubId: 'haedam',
+    id: 'give-1',
+    clubId: 'give',
     category: 'notice',
-    title: '3월 토론 주제 발표 — AI 윤리 찬반 토론',
-    body: `<p>이번 달 토론 주제는 <strong>"인공지능 규제를 강화해야 한다"</strong>입니다.</p>
-<div class="notice-box">📍 3월 18일(화) 오후 5시 | 인문관 세미나실 201호</div>
-<p>찬반 입장 및 근거 2개 이상 준비해 오세요!</p>`,
-    author: '이재원',
+    title: '3월 재능기부 봉사 모집 — 학습 지원 봉사',
+    body: `<p>이번 달 재능기부 봉사 활동을 안내합니다.</p>
+<div class="notice-box">📍 3월 29일(토) 오전 10시 | 춘천시 지역아동센터</div>
+<p>초등학생 학습 지원 봉사입니다. 교육 경험 없어도 참여 가능하며 사전 교육을 제공합니다.</p>`,
+    author: '김수아',
     authorRole: '회장',
     authorGrade: '3학년',
-    authorColor: '#6366F1',
-    date: '2025.03.09',
-    views: 97,
-    likes: 14,
+    authorColor: '#22C55E',
+    date: '2025.03.12',
+    views: 118,
+    likes: 17,
     isPinned: true,
     hasImage: false,
     comments: [
-      { id: 'c11', author: '황지연', authorColor: '#F59E0B', text: '저는 찬성 측으로 준비할게요!', time: '3일 전', likes: 2 },
-    ],
-  },
-
-  // ── 십시일밥 (봉사) ──────────────────────────────────
-  {
-    id: 'sipsi-1',
-    clubId: 'sip-si-il-bap',
-    category: 'notice',
-    title: '3월 정기 봉사 일정 안내',
-    body: `<p>이번 달 정기 봉사 활동 일정 공지드립니다.</p>
-<div class="notice-box">📍 3월 22일(토) 오전 10시 | 학생처 봉사활동실 집합</div>
-<p>이번에는 춘천 노인복지관 방문 봉사입니다. 식사 보조 및 말벗 봉사를 진행합니다.</p>`,
-    author: '이다현',
-    authorRole: '회장',
-    authorGrade: '3학년',
-    authorColor: '#F97316',
-    date: '2025.03.10',
-    views: 182,
-    likes: 22,
-    isPinned: true,
-    hasImage: false,
-    comments: [
-      { id: 'c12', author: '박민서', authorColor: '#22C55E', text: '신청했어요! 기대됩니다 😊', time: '2일 전', likes: 4 },
+      { id: 'c-give1', author: '이도윤', authorColor: '#10B981', text: '신청했어요! 기대됩니다 😊', time: '2일 전', likes: 4 },
     ],
   },
 
