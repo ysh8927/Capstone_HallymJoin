@@ -1,0 +1,183 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id         String   @id @default(cuid())
+  studentId  String   @unique
+  email      String   @unique
+  name       String
+  password   String
+  grade      String   @default("1")
+  department String   @default("")
+  role       Role     @default(STUDENT)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  joinedClubs   ClubMember[]
+  bookmarks     Bookmark[]
+  posts         Post[]
+  comments      Comment[]
+  notifications Notification[]
+
+  @@map("users")
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+}
+
+model Club {
+  id              String   @id
+  name            String
+  category        Category
+  description     String   @db.Text
+  shortDesc       String
+  emoji           String
+  color           String
+  color2          String
+  memberCount     Int      @default(0)
+  maxMembers      Int      @default(30)
+  isRecruiting    Boolean  @default(false)
+  meetingDay      String
+  meetingPlace    String
+  establishedYear Int
+  tags            String   @db.Text
+  president       String
+  likes           Int      @default(0)
+  postCount       Int      @default(0)
+  snsUrl          String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  members   ClubMember[]
+  bookmarks Bookmark[]
+  posts     Post[]
+
+  @@map("clubs")
+}
+
+enum Category {
+  academic
+  hobby
+  performance
+  sports
+  volunteer
+  religion
+  etc
+}
+
+model ClubMember {
+  id       String       @id @default(cuid())
+  userId   String
+  clubId   String
+  status   MemberStatus @default(PENDING)
+  joinedAt DateTime     @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  club Club @relation(fields: [clubId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, clubId])
+  @@index([userId])
+  @@index([clubId])
+  @@map("club_members")
+}
+
+enum MemberStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  userId    String
+  clubId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  club Club @relation(fields: [clubId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, clubId])
+  @@index([userId])
+  @@index([clubId])
+  @@map("bookmarks")
+}
+
+model Post {
+  id        String       @id @default(cuid())
+  clubId    String
+  authorId  String
+  category  PostCategory
+  title     String
+  body      String       @db.Text
+  isPinned  Boolean      @default(false)
+  hasImage  Boolean      @default(false)
+  views     Int          @default(0)
+  likes     Int          @default(0)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  club     Club      @relation(fields: [clubId], references: [id], onDelete: Cascade)
+  author   User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  comments Comment[]
+
+  @@index([clubId])
+  @@index([authorId])
+  @@map("posts")
+}
+
+enum PostCategory {
+  notice
+  free
+  photo
+  qna
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  postId    String
+  authorId  String
+  text      String   @db.Text
+  likes     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  post   Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@index([authorId])
+  @@map("comments")
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  type      NotifType
+  message   String
+  isRead    Boolean   @default(false)
+  postId    String?
+  clubId    String?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("notifications")
+}
+
+enum NotifType {
+  comment
+  like
+  notice
+  join
+  reply
+}

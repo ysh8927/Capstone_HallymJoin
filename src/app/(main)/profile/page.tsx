@@ -40,33 +40,33 @@ export default function ProfilePage() {
 
   function saveProfile() {
     setError('');
-    if (!name.trim())       { setError('ì´ë¦„ì„ ì…ë ¥í•´ì£¼ì„¸ìš”.'); return; }
-    if (!department.trim()) { setError('í•™ê³¼ë¥¼ ì…ë ¥í•´ì£¼ì„¸ìš”.'); return; }
+    if (!name.trim())       { setError('ÀÌ¸§À» ÀÔ·ÂÇØÁÖ¼¼¿ä.'); return; }
+    if (!department.trim()) { setError('ÇĞ°ú¸¦ ÀÔ·ÂÇØÁÖ¼¼¿ä.'); return; }
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
   }
 
   function savePw() {
     setPwError('');
-    if (!currentPw) { setPwError('í˜„ì¬ ë¹„ë°€ë²ˆí˜¸ë¥¼ ì…ë ¥í•´ì£¼ì„¸ìš”.'); return; }
-    if (newPw.length < 8) { setPwError('ìƒˆ ë¹„ë°€ë²ˆí˜¸ëŠ” 8ì ì´ìƒì´ì–´ì•¼ í•©ë‹ˆë‹¤.'); return; }
-    if (newPw !== newPwCf) { setPwError('ìƒˆ ë¹„ë°€ë²ˆí˜¸ê°€ ì¼ì¹˜í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.'); return; }
+    if (!currentPw) { setPwError('ÇöÀç ºñ¹Ğ¹øÈ£¸¦ ÀÔ·ÂÇØÁÖ¼¼¿ä.'); return; }
+    if (newPw.length < 8) { setPwError('»õ ºñ¹Ğ¹øÈ£´Â 8ÀÚ ÀÌ»óÀÌ¾î¾ß ÇÕ´Ï´Ù.'); return; }
+    if (newPw !== newPwCf) { setPwError('»õ ºñ¹Ğ¹øÈ£°¡ ÀÏÄ¡ÇÏÁö ¾Ê½À´Ï´Ù.'); return; }
     setPwSaved(true);
     setCurrentPw(''); setNewPw(''); setNewPwCf('');
     setTimeout(() => setPwSaved(false), 2500);
   }
 
   const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
-    { id: 'profile',       label: 'í”„ë¡œí•„',    icon: <User size={14} /> },
-    { id: 'security',      label: 'ë³´ì•ˆ',       icon: <Shield size={14} /> },
-    { id: 'notifications', label: 'ì•Œë¦¼ ì„¤ì •', icon: <Bell size={14} /> },
+    { id: 'profile',       label: 'ÇÁ·ÎÇÊ',    icon: <User size={14} /> },
+    { id: 'security',      label: 'º¸¾È',       icon: <Shield size={14} /> },
+    { id: 'notifications', label: '¾Ë¸² ¼³Á¤', icon: <Bell size={14} /> },
   ];
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
       <div className="mb-6">
-        <h1 className="text-xl font-serif font-bold text-[var(--txt)]">í”„ë¡œí•„ ì„¤ì •</h1>
-        <p className="text-xs text-[var(--txt3)] mt-1">ê³„ì • ì •ë³´ì™€ ì•Œë¦¼ ì„¤ì •ì„ ê´€ë¦¬í•©ë‹ˆë‹¤.</p>
+        <h1 className="text-xl font-serif font-bold text-[var(--txt)]">ÇÁ·ÎÇÊ ¼³Á¤</h1>
+        <p className="text-xs text-[var(--txt3)] mt-1">°èÁ¤ Á¤º¸¿Í ¾Ë¸² ¼³Á¤À» °ü¸®ÇÕ´Ï´Ù.</p>
       </div>
 
       {/* Tabs */}
@@ -87,7 +87,7 @@ export default function ProfilePage() {
         ))}
       </div>
 
-      {/* â”€â”€ Profile tab â”€â”€ */}
+      {/* ¦¡¦¡ Profile tab ¦¡¦¡ */}
       {tab === 'profile' && (
         <div className="bg-[var(--bg)] rounded-2xl border border-[var(--bdr)] p-6 space-y-5">
           {/* Avatar */}
@@ -97,7 +97,7 @@ export default function ProfilePage() {
             </div>
             <div>
               <p className="text-sm font-semibold text-[var(--txt)]">{MOCK_USER.email}</p>
-              <p className="text-xs text-[var(--txt3)] mt-0.5">í•™ë²ˆ: {MOCK_USER.studentId}</p>
+              <p className="text-xs text-[var(--txt3)] mt-0.5">ÇĞ¹ø: {MOCK_USER.studentId}</p>
             </div>
           </div>
 
@@ -106,31 +106,31 @@ export default function ProfilePage() {
           {/* Fields */}
           <div>
             <label className="block text-xs font-semibold text-[var(--txt2)] mb-1.5 flex items-center gap-1.5">
-              <User size={12} /> ì´ë¦„
+              <User size={12} /> ÀÌ¸§
             </label>
             <input type="text" value={name} onChange={(e) => setName(e.target.value)} className={inputCls(!!error && !name.trim())} />
           </div>
           <div className="grid grid-cols-3 gap-3">
             <div className="col-span-2">
               <label className="block text-xs font-semibold text-[var(--txt2)] mb-1.5 flex items-center gap-1.5">
-                <BookOpen size={12} /> í•™ê³¼
+                <BookOpen size={12} /> ÇĞ°ú
               </label>
               <input type="text" value={department} onChange={(e) => setDepartment(e.target.value)} className={inputCls(!!error && !department.trim())} />
             </div>
             <div>
               <label className="block text-xs font-semibold text-[var(--txt2)] mb-1.5 flex items-center gap-1.5">
-                <GraduationCap size={12} /> í•™ë…„
+                <GraduationCap size={12} /> ÇĞ³â
               </label>
               <select value={grade} onChange={(e) => setGrade(e.target.value)} className={cn(inputCls(), 'cursor-pointer')}>
                 {['1', '2', '3', '4'].map((g) => (
-                  <option key={g} value={g}>{g}í•™ë…„</option>
+                  <option key={g} value={g}>{g}ÇĞ³â</option>
                 ))}
               </select>
             </div>
           </div>
           <div>
             <label className="block text-xs font-semibold text-[var(--txt2)] mb-1.5 flex items-center gap-1.5">
-              <Mail size={12} /> ì´ë©”ì¼ (ë³€ê²½ ë¶ˆê°€)
+              <Mail size={12} /> ÀÌ¸ŞÀÏ (º¯°æ ºÒ°¡)
             </label>
             <input type="text" value={MOCK_USER.email} disabled className={cn(inputCls(), 'opacity-50 cursor-not-allowed')} />
           </div>
@@ -144,7 +144,7 @@ export default function ProfilePage() {
           {saved && (
             <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2.5 animate-fade-in">
               <CheckCircle size={13} className="text-emerald-500" />
-              <p className="text-xs text-emerald-600 font-medium">ì €ì¥ë˜ì—ˆìŠµë‹ˆë‹¤.</p>
+              <p className="text-xs text-emerald-600 font-medium">ÀúÀåµÇ¾ú½À´Ï´Ù.</p>
             </div>
           )}
 
@@ -152,21 +152,21 @@ export default function ProfilePage() {
             onClick={saveProfile}
             className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-colors cursor-pointer"
           >
-            ë³€ê²½ ì‚¬í•­ ì €ì¥
+            º¯°æ »çÇ× ÀúÀå
           </button>
         </div>
       )}
 
-      {/* â”€â”€ Security tab â”€â”€ */}
+      {/* ¦¡¦¡ Security tab ¦¡¦¡ */}
       {tab === 'security' && (
         <div className="bg-[var(--bg)] rounded-2xl border border-[var(--bdr)] p-6 space-y-5">
           <h2 className="text-sm font-semibold text-[var(--txt)] flex items-center gap-2">
-            <KeyRound size={14} className="text-indigo-500" /> ë¹„ë°€ë²ˆí˜¸ ë³€ê²½
+            <KeyRound size={14} className="text-indigo-500" /> ºñ¹Ğ¹øÈ£ º¯°æ
           </h2>
           <div>
-            <label className="block text-xs font-semibold text-[var(--txt2)] mb-1.5">í˜„ì¬ ë¹„ë°€ë²ˆí˜¸</label>
+            <label className="block text-xs font-semibold text-[var(--txt2)] mb-1.5">ÇöÀç ºñ¹Ğ¹øÈ£</label>
             <div className="relative">
-              <input type={showPw ? 'text' : 'password'} placeholder="í˜„ì¬ ë¹„ë°€ë²ˆí˜¸" value={currentPw}
+              <input type={showPw ? 'text' : 'password'} placeholder="ÇöÀç ºñ¹Ğ¹øÈ£" value={currentPw}
                 onChange={(e) => setCurrentPw(e.target.value)} className={cn(inputCls(!!pwError && !currentPw), 'pr-10')} />
               <button type="button" onClick={() => setShowPw(!showPw)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--txt3)] hover:text-[var(--txt2)] cursor-pointer">
@@ -175,14 +175,14 @@ export default function ProfilePage() {
             </div>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-[var(--txt2)] mb-1.5">ìƒˆ ë¹„ë°€ë²ˆí˜¸</label>
-            <input type={showPw ? 'text' : 'password'} placeholder="8ì ì´ìƒ" value={newPw}
+            <label className="block text-xs font-semibold text-[var(--txt2)] mb-1.5">»õ ºñ¹Ğ¹øÈ£</label>
+            <input type={showPw ? 'text' : 'password'} placeholder="8ÀÚ ÀÌ»ó" value={newPw}
               onChange={(e) => setNewPw(e.target.value)} className={inputCls(!!pwError && newPw.length < 8 && newPw.length > 0)} />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-[var(--txt2)] mb-1.5">ìƒˆ ë¹„ë°€ë²ˆí˜¸ í™•ì¸</label>
+            <label className="block text-xs font-semibold text-[var(--txt2)] mb-1.5">»õ ºñ¹Ğ¹øÈ£ È®ÀÎ</label>
             <div className="relative">
-              <input type={showPw ? 'text' : 'password'} placeholder="ë¹„ë°€ë²ˆí˜¸ ì¬ì…ë ¥" value={newPwCf}
+              <input type={showPw ? 'text' : 'password'} placeholder="ºñ¹Ğ¹øÈ£ ÀçÀÔ·Â" value={newPwCf}
                 onChange={(e) => setNewPwCf(e.target.value)} className={cn(inputCls(!!(newPwCf && newPw !== newPwCf)), 'pr-10')} />
               {newPwCf && newPw === newPwCf && (
                 <CheckCircle size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500" />
@@ -198,27 +198,27 @@ export default function ProfilePage() {
           {pwSaved && (
             <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2.5 animate-fade-in">
               <CheckCircle size={13} className="text-emerald-500" />
-              <p className="text-xs text-emerald-600 font-medium">ë¹„ë°€ë²ˆí˜¸ê°€ ë³€ê²½ë˜ì—ˆìŠµë‹ˆë‹¤.</p>
+              <p className="text-xs text-emerald-600 font-medium">ºñ¹Ğ¹øÈ£°¡ º¯°æµÇ¾ú½À´Ï´Ù.</p>
             </div>
           )}
           <button onClick={savePw}
             className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-colors cursor-pointer">
-            ë¹„ë°€ë²ˆí˜¸ ë³€ê²½
+            ºñ¹Ğ¹øÈ£ º¯°æ
           </button>
         </div>
       )}
 
-      {/* â”€â”€ Notifications tab â”€â”€ */}
+      {/* ¦¡¦¡ Notifications tab ¦¡¦¡ */}
       {tab === 'notifications' && (
         <div className="bg-[var(--bg)] rounded-2xl border border-[var(--bdr)] p-6 space-y-1">
           <h2 className="text-sm font-semibold text-[var(--txt)] mb-4 flex items-center gap-2">
-            <Bell size={14} className="text-indigo-500" /> ì•Œë¦¼ ìˆ˜ì‹  ì„¤ì •
+            <Bell size={14} className="text-indigo-500" /> ¾Ë¸² ¼ö½Å ¼³Á¤
           </h2>
           {[
-            { label: 'ëŒ“ê¸€ ì•Œë¦¼',    desc: 'ë‚´ ê²Œì‹œê¸€ì— ëŒ“ê¸€ì´ ë‹¬ë¦´ ë•Œ',     value: notifComment, set: setNotifComment },
-            { label: 'ì¢‹ì•„ìš” ì•Œë¦¼',  desc: 'ë‚´ ê²Œì‹œê¸€ì— ì¢‹ì•„ìš”ê°€ ë‹¬ë¦´ ë•Œ',   value: notifLike,    set: setNotifLike    },
-            { label: 'ê³µì§€ ì•Œë¦¼',    desc: 'ê°€ì…í•œ ë™ì•„ë¦¬ì— ê³µì§€ê°€ ì˜¬ë¼ì˜¬ ë•Œ', value: notifNotice, set: setNotifNotice  },
-            { label: 'ê°€ì… ìŠ¹ì¸ ì•Œë¦¼', desc: 'ë™ì•„ë¦¬ ê°€ì… ì‹ ì²­ì´ ì²˜ë¦¬ë  ë•Œ',  value: notifJoin,   set: setNotifJoin    },
+            { label: '´ñ±Û ¾Ë¸²',    desc: '³» °Ô½Ã±Û¿¡ ´ñ±ÛÀÌ ´Ş¸± ¶§',     value: notifComment, set: setNotifComment },
+            { label: 'ÁÁ¾Æ¿ä ¾Ë¸²',  desc: '³» °Ô½Ã±Û¿¡ ÁÁ¾Æ¿ä°¡ ´Ş¸± ¶§',   value: notifLike,    set: setNotifLike    },
+            { label: '°øÁö ¾Ë¸²',    desc: '°¡ÀÔÇÑ µ¿¾Æ¸®¿¡ °øÁö°¡ ¿Ã¶ó¿Ã ¶§', value: notifNotice, set: setNotifNotice  },
+            { label: '°¡ÀÔ ½ÂÀÎ ¾Ë¸²', desc: 'µ¿¾Æ¸® °¡ÀÔ ½ÅÃ»ÀÌ Ã³¸®µÉ ¶§',  value: notifJoin,   set: setNotifJoin    },
           ].map(({ label, desc, value, set }) => (
             <label
               key={label}
@@ -245,7 +245,7 @@ export default function ProfilePage() {
           ))}
           <div className="pt-3">
             <button className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-colors cursor-pointer">
-              ì•Œë¦¼ ì„¤ì • ì €ì¥
+              ¾Ë¸² ¼³Á¤ ÀúÀå
             </button>
           </div>
         </div>

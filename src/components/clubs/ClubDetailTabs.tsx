@@ -55,7 +55,7 @@ export default function ClubDetailTabs({ club, posts, pinnedPost }: Props) {
               <p className="text-xs text-[var(--txt3)] mt-1">첫 번째 글을 작성해보세요!</p>
             </div>
           ) : (
-            <ClubBoard posts={posts} pinnedPost={pinnedPost} />
+            <ClubBoard posts={posts} pinnedPost={pinnedPost} clubId={club.id} />
           )}
         </div>
       )}

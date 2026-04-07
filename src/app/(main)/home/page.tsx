@@ -8,7 +8,7 @@ import { categoryColor } from '@/lib/utils';
 
 export const metadata = { title: '홈' };
 
-const FEATURED_IDS = ['chaos', 'chumbaram', 'hanbitsajinhoe', 'sip-si-il-bap'];
+const FEATURED_IDS = ['chaos', 'chumbaram', 'hanbitsajinhoe', 'hologram'];
 const featured = CLUBS.filter((c) => FEATURED_IDS.includes(c.id));
 const recruiting = CLUBS.filter((c) => c.isRecruiting).slice(0, 3);
 
@@ -20,12 +20,12 @@ const STATS = [
 ];
 
 const CATEGORIES: { key: ClubCategory; emoji: string }[] = [
-  { key: 'academic',    emoji: '🎓' },
+  { key: 'academic',    emoji: '📚' },
   { key: 'hobby',       emoji: '🎨' },
   { key: 'performance', emoji: '🎭' },
   { key: 'sports',      emoji: '⚽' },
   { key: 'volunteer',   emoji: '🤝' },
-  { key: 'religion',    emoji: '✝️' },
+  { key: 'religion',    emoji: '🙏' },
 ];
 
 export default function HomePage() {
@@ -50,7 +50,7 @@ export default function HomePage() {
               </span>
             </h1>
             <p className="text-base text-[var(--txt2)] leading-relaxed mb-8 max-w-lg">
-              학술, 취미예술, 공연, 체육, 봉사, 종교까지 —<br className="hidden md:block" />
+              학술, 취미예술, 공연, 체육, 봉사, 종교까지 🎉<br className="hidden md:block" />
               {CLUBS.length}개의 중앙동아리에서 나에게 딱 맞는 곳을 찾아보세요.
             </p>
 
