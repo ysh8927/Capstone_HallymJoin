@@ -19,9 +19,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       },
     });
 
-    if (!post) return NextResponse.json({ error: '°Ô½Ã±ÛÀ» Ã£À» ¼ö ¾ø½À´Ï´Ù.' }, { status: 404 });
+    if (!post) return NextResponse.json({ error: 'ê²Œì‹œê¸€ì„ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.' }, { status: 404 });
 
-    // Á¶È¸¼ö Áõ°¡
     await prisma.post.update({
       where: { id },
       data: { views: { increment: 1 } },
@@ -30,6 +29,6 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     return NextResponse.json(post);
   } catch (err) {
     console.error('[POST GET ERROR]', err);
-    return NextResponse.json({ error: '¼­¹ö ¿À·ù°¡ ¹ß»ýÇß½À´Ï´Ù.' }, { status: 500 });
+    return NextResponse.json({ error: 'ì„œë²„ ì˜¤ë¥˜ê°€ ë°œìƒí–ˆìŠµë‹ˆë‹¤.' }, { status: 500 });
   }
 }

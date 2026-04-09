@@ -3,14 +3,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getToken } from 'next-auth/jwt';
 
-// °Ô½Ã±Û ¸ñ·Ï Á¶È¸
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const clubId = searchParams.get('clubId');
 
     if (!clubId) {
-      return NextResponse.json({ error: 'clubId°¡ ÇÊ¿äÇÕ´Ï´Ù.' }, { status: 400 });
+      return NextResponse.json({ error: 'clubIdê°€ í•„ìš”í•©ë‹ˆë‹¤.' }, { status: 400 });
     }
 
     const posts = await prisma.post.findMany({
@@ -30,20 +29,19 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(posts);
   } catch (err) {
     console.error('[POSTS GET ERROR]', err);
-    return NextResponse.json({ error: '¼­¹ö ¿À·ù°¡ ¹ß»ıÇß½À´Ï´Ù.' }, { status: 500 });
+    return NextResponse.json({ error: 'ì„œë²„ ì˜¤ë¥˜ê°€ ë°œìƒí–ˆìŠµë‹ˆë‹¤.' }, { status: 500 });
   }
 }
 
-// °Ô½Ã±Û ÀÛ¼º
 export async function POST(req: NextRequest) {
   try {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-    if (!token) return NextResponse.json({ error: '·Î±×ÀÎÀÌ ÇÊ¿äÇÕ´Ï´Ù.' }, { status: 401 });
+    if (!token) return NextResponse.json({ error: 'ë¡œê·¸ì¸ì´ í•„ìš”í•©ë‹ˆë‹¤.' }, { status: 401 });
 
     const { clubId, category, title, body, isPinned } = await req.json();
 
     if (!clubId || !category || !title || !body) {
-      return NextResponse.json({ error: 'ÇÊ¼ö Ç×¸ñÀ» ¸ğµÎ ÀÔ·ÂÇØÁÖ¼¼¿ä.' }, { status: 400 });
+      return NextResponse.json({ error: 'í•„ìˆ˜ í•­ëª©ì„ ëª¨ë‘ ì…ë ¥í•´ì£¼ì„¸ìš”.' }, { status: 400 });
     }
 
     const post = await prisma.post.create({
@@ -60,6 +58,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(post, { status: 201 });
   } catch (err) {
     console.error('[POSTS POST ERROR]', err);
-    return NextResponse.json({ error: '¼­¹ö ¿À·ù°¡ ¹ß»ıÇß½À´Ï´Ù.' }, { status: 500 });
+    return NextResponse.json({ error: 'ì„œë²„ ì˜¤ë¥˜ê°€ ë°œìƒí–ˆìŠµë‹ˆë‹¤.' }, { status: 500 });
   }
 }

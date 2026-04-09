@@ -6,13 +6,13 @@ import { getToken } from 'next-auth/jwt';
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-    if (!token) return NextResponse.json({ error: '·Î±×ÀÎÀÌ ÇÊ¿äÇÕ´Ï´Ù.' }, { status: 401 });
+    if (!token) return NextResponse.json({ error: 'ë¡œê·¸ì¸ì´ í•„ìš”í•©ë‹ˆë‹¤.' }, { status: 401 });
 
     const { id: postId } = await params;
     const { text } = await req.json();
 
     if (!text?.trim()) {
-      return NextResponse.json({ error: '´ñ±Û ³»¿ëÀ» ÀÔ·ÂÇØÁÖ¼¼¿ä.' }, { status: 400 });
+      return NextResponse.json({ error: 'ëŒ“ê¸€ ë‚´ìš©ì„ ì…ë ¥í•´ì£¼ì„¸ìš”.' }, { status: 400 });
     }
 
     const comment = await prisma.comment.create({
@@ -29,6 +29,6 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     return NextResponse.json(comment, { status: 201 });
   } catch (err) {
     console.error('[COMMENT POST ERROR]', err);
-    return NextResponse.json({ error: '¼­¹ö ¿À·ù°¡ ¹ß»ıÇß½À´Ï´Ù.' }, { status: 500 });
+    return NextResponse.json({ error: 'ì„œë²„ ì˜¤ë¥˜ê°€ ë°œìƒí–ˆìŠµë‹ˆë‹¤.' }, { status: 500 });
   }
 }
