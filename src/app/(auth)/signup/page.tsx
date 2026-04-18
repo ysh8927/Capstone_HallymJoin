@@ -37,10 +37,27 @@ export default function SignupPage() {
       return;
     }
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 1200));
-    setLoading(false);
-    setStep(2);
-    startResendTimer();
+
+    try {
+      const res = await fetch('/api/verify-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setStep(2);
+        startResendTimer();
+      } else {
+        setError(data.error || '오류가 발생했습니다.');
+      }
+    } catch (err) {
+      setError('서버 오류가 발생했습니다.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   function startResendTimer() {
@@ -54,9 +71,26 @@ export default function SignupPage() {
     setError('');
     if (code.length !== 6) { setError('6자리 인증 코드를 입력해주세요.'); return; }
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 800));
-    setLoading(false);
-    setStep(3);
+
+    try {
+      const res = await fetch('/api/verify-email', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, code }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setStep(3);
+      } else {
+        setError(data.error || '인증에 실패했습니다.');
+      }
+    } catch (err) {
+      setError('서버 오류가 발생했습니다.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function completeSignup() {
@@ -138,6 +172,7 @@ export default function SignupPage() {
               <InfoBox>
                 학번 이메일(<strong>{studentId || 'XXXXXXXX'}@hallym.ac.kr</strong>)로 인증 코드가 발송됩니다.
                 한림대학교 재학·휴학생만 가입 가능합니다.
+                <br/><span className="text-amber-600 font-medium">💡 개발 중: 콘솔에서 인증 코드를 확인하세요</span>
               </InfoBox>
               {error && <ErrorBox msg={error} />}
               <button onClick={sendCode} disabled={loading || studentId.length < 8}
@@ -152,7 +187,8 @@ export default function SignupPage() {
           {step === 2 && (
             <div className="space-y-4">
               <InfoBox icon="✉️">
-                <strong>{email}</strong>으로 6자리 인증 코드를 발송했습니다. 메일함을 확인해주세요.
+                <strong>{email}</strong>으로 6자리 인증 코드를 발송했습니다.
+                <br/><span className="text-amber-600 font-medium">💡 개발 중: VSCode 터미널(콘솔)에서 인증 코드를 확인하세요!</span>
               </InfoBox>
               <div>
                 <label className="block text-xs font-semibold text-[var(--txt2)] mb-1.5">인증 코드 (6자리)</label>

@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
   Users, BookOpen, Heart, MessageSquare, ChevronRight,
@@ -7,10 +8,21 @@ import {
   MessageCircleReply, UserCheck, Megaphone,
 } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-import { CLUBS } from '@/data/clubs';
-import { MOCK_ACTIVITY } from '@/data/mockUser';
 import { CATEGORY_LABEL } from '@/types';
 import { cn } from '@/lib/utils';
+
+interface Club {
+  id: string;
+  name: string;
+  category: string;
+  shortDesc?: string;
+  emoji: string;
+  color: string;
+  color2: string;
+  memberCount: number;
+  isRecruiting: boolean;
+  meetingDay: string;
+}
 
 const ACTIVITY_ICON = {
   comment: <MessageSquare size={13} />,
@@ -31,14 +43,31 @@ export default function MyClubsPage() {
   const { data: session } = useSession();
   const user = session?.user;
 
-  // 임시로 빈 배열 사용 (추후 DB 연동)
-  const joinedClubs: typeof CLUBS = [];
-  const bookmarkedClubs: typeof CLUBS = [];
+  const [joinedClubs, setJoinedClubs] = useState<Club[]>([]);
+  const [bookmarkedClubs, setBookmarkedClubs] = useState<Club[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchMyClubs() {
+      try {
+        const res = await fetch('/api/my-clubs');
+        if (res.ok) {
+          const data = await res.json();
+          setJoinedClubs(data.joined || []);
+          setBookmarkedClubs(data.bookmarked || []);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchMyClubs();
+  }, []);
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
 
-      {/* Profile header */}
       <div className="bg-[var(--bg)] rounded-2xl border border-[var(--bdr)] overflow-hidden mb-6">
         <div className="h-20 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
         <div className="px-6 pb-5">
@@ -78,38 +107,93 @@ export default function MyClubsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
 
-          {/* 가입 동아리 */}
           <section className="bg-[var(--bg)] rounded-2xl border border-[var(--bdr)] overflow-hidden">
             <div className="px-5 py-4 border-b border-[var(--bdr)] flex items-center gap-2">
               <Users size={14} className="text-indigo-500" />
               <h2 className="text-sm font-semibold text-[var(--txt)]">가입 동아리</h2>
               <span className="text-[10px] bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded-full font-bold">{joinedClubs.length}</span>
             </div>
-            <div className="px-5 py-10 text-center">
-              <p className="text-sm text-[var(--txt3)] mb-3">아직 가입한 동아리가 없습니다.</p>
-              <Link href="/clubs" className="text-xs text-indigo-500 hover:text-indigo-700 font-semibold">
-                동아리 탐색하기 →
-              </Link>
-            </div>
+            {loading ? (
+              <div className="px-5 py-10 text-center text-sm text-[var(--txt3)]">로딩 중...</div>
+            ) : joinedClubs.length === 0 ? (
+              <div className="px-5 py-10 text-center">
+                <p className="text-sm text-[var(--txt3)] mb-3">아직 가입한 동아리가 없습니다.</p>
+                <Link href="/clubs" className="text-xs text-indigo-500 hover:text-indigo-700 font-semibold">
+                  동아리 탐색하기 →
+                </Link>
+              </div>
+            ) : (
+              <div className="divide-y divide-[var(--bdr)]">
+                {joinedClubs.map((club) => (
+                  <Link key={club.id} href={`/clubs/${club.id}`}
+                    className="flex items-center gap-4 px-5 py-4 hover:bg-[var(--bg2)] transition-colors group">
+                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0"
+                      style={{ background: `linear-gradient(135deg, ${club.color}22, ${club.color2}22)` }}>
+                      {club.emoji}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <p className="text-sm font-semibold text-[var(--txt)] group-hover:text-indigo-600 transition-colors">{club.name}</p>
+                        <span className="text-[10px] text-[var(--txt3)] bg-[var(--bg2)] px-2 py-0.5 rounded-full">{CATEGORY_LABEL[club.category as keyof typeof CATEGORY_LABEL]}</span>
+                      </div>
+                      <p className="text-xs text-[var(--txt3)] truncate">{club.shortDesc}</p>
+                      <div className="flex items-center gap-3 mt-1.5 text-[10px] text-[var(--txt3)]">
+                        <span className="flex items-center gap-1"><Users size={10} />{club.memberCount}명</span>
+                        <span className="flex items-center gap-1"><Calendar size={10} />{club.meetingDay}</span>
+                        {club.isRecruiting && <span className="text-emerald-600 font-medium">모집 중</span>}
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                      <Link href={`/clubs/${club.id}/board/write`} onClick={(e) => e.stopPropagation()}
+                        className="text-[11px] text-indigo-500 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1 rounded-lg transition-colors">
+                        글 쓰기
+                      </Link>
+                      <ChevronRight size={14} className="text-[var(--txt3)] group-hover:text-indigo-400 transition-colors" />
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
           </section>
 
-          {/* 관심 동아리 */}
           <section className="bg-[var(--bg)] rounded-2xl border border-[var(--bdr)] overflow-hidden">
             <div className="px-5 py-4 border-b border-[var(--bdr)] flex items-center gap-2">
               <Star size={14} className="text-amber-500" />
               <h2 className="text-sm font-semibold text-[var(--txt)]">관심 동아리</h2>
               <span className="text-[10px] bg-amber-100 text-amber-600 px-1.5 py-0.5 rounded-full font-bold">{bookmarkedClubs.length}</span>
             </div>
-            <div className="px-5 py-10 text-center">
-              <p className="text-sm text-[var(--txt3)] mb-3">아직 관심 동아리가 없습니다.</p>
-              <Link href="/clubs" className="text-xs text-indigo-500 hover:text-indigo-700 font-semibold">
-                동아리 탐색하기 →
-              </Link>
-            </div>
+            {loading ? (
+              <div className="px-5 py-10 text-center text-sm text-[var(--txt3)]">로딩 중...</div>
+            ) : bookmarkedClubs.length === 0 ? (
+              <div className="px-5 py-10 text-center">
+                <p className="text-sm text-[var(--txt3)] mb-3">아직 관심 동아리가 없습니다.</p>
+                <Link href="/clubs" className="text-xs text-indigo-500 hover:text-indigo-700 font-semibold">
+                  동아리 탐색하기 →
+                </Link>
+              </div>
+            ) : (
+              <div className="p-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {bookmarkedClubs.map((club) => (
+                  <Link key={club.id} href={`/clubs/${club.id}`}
+                    className="flex flex-col items-center gap-2 p-3 rounded-xl border border-[var(--bdr)] hover:border-indigo-200 hover:bg-indigo-50/30 transition-colors group text-center">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl"
+                      style={{ background: `linear-gradient(135deg, ${club.color}22, ${club.color2}22)` }}>
+                      {club.emoji}
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-[var(--txt)] group-hover:text-indigo-600 transition-colors">{club.name}</p>
+                      <p className="text-[10px] text-[var(--txt3)] mt-0.5">{club.memberCount}명</p>
+                    </div>
+                    {club.isRecruiting && (
+                      <span className="text-[10px] text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full">모집 중</span>
+                    )}
+                  </Link>
+                ))}
+              </div>
+            )}
           </section>
         </div>
 
-        {/* 활동 피드 */}
         <aside className="space-y-4">
           <section className="bg-[var(--bg)] rounded-2xl border border-[var(--bdr)] overflow-hidden">
             <div className="px-4 py-3.5 border-b border-[var(--bdr)] flex items-center gap-2">

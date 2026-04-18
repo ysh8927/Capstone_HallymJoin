@@ -8,6 +8,8 @@ import { CLUBS } from '@/data/clubs';
 import { CATEGORY_LABEL } from '@/types';
 import { cn } from '@/lib/utils';
 import ClubDetailTabs from '@/components/clubs/ClubDetailTabs';
+import JoinButton from '@/components/clubs/JoinButton';
+import BookmarkButton from '@/components/clubs/BookmarkButton';
 
 interface Props { params: Promise<{ id: string }> }
 
@@ -35,12 +37,23 @@ export default async function ClubDetailPage({ params }: Props) {
     authorRole:  '',
     authorGrade: '',
     authorColor: '#6366F1',
-    date:        new Date(p.createdAt).toLocaleDateString('ko-KR'),
+    date:        new Date(p.createdAt).toLocaleString('ko-KR', { 
+      year: 'numeric', 
+      month: '2-digit', 
+      day: '2-digit', 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    }),
     comments:    (p.comments ?? []).map((c: any) => ({
       ...c,
       author:      c.author?.name ?? '알 수 없음',
       authorColor: '#6366F1',
-      time:        new Date(c.createdAt).toLocaleDateString('ko-KR'),
+      time:        new Date(c.createdAt).toLocaleString('ko-KR', { 
+        month: '2-digit', 
+        day: '2-digit', 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      }),
       likes:       c.likes ?? 0,
     })),
   }));
@@ -118,15 +131,8 @@ export default async function ClubDetailPage({ params }: Props) {
               </div>
             </div>
 
-            {club.isRecruiting ? (
-              <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold py-3 rounded-xl transition-colors cursor-pointer">
-                가입 신청하기
-              </button>
-            ) : (
-              <div className="w-full text-center text-xs text-[var(--txt3)] bg-[var(--bg2)] border border-[var(--bdr)] py-3 rounded-xl">
-                현재 모집이 마감되었습니다
-              </div>
-            )}
+            <BookmarkButton clubId={club.id} />
+            <JoinButton clubId={club.id} isRecruiting={club.isRecruiting} />
 
             {similarClubs.length > 0 && (
               <div className="bg-[var(--bg)] rounded-2xl border border-[var(--bdr)] p-4">
