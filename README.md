@@ -136,6 +136,8 @@
 - ❌ 대관 신청 시스템
 
 ## 📁 프로젝트 구조
+
+```
 src/
 ├── app/
 │   ├── (auth)/            # 로그인, 회원가입
@@ -151,9 +153,10 @@ src/
 │       ├── notifications/ # 알림
 │       └── verify-email/  # 이메일 인증
 ├── components/            # 재사용 컴포넌트
-├── lib/                   # 유틸리티 (prisma, auth)
+├── lib/                   # 유틸리ティ (prisma, auth)
 ├── prisma/                # DB 스키마, seed
 └── types/                 # TypeScript 타입
+```
 
 ## 🚀 로컬 실행 방법
 
