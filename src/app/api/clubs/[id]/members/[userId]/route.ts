@@ -3,33 +3,33 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getToken } from 'next-auth/jwt';
 
-// °¡ÀÔ ½ÅÃ» ½ÂÀÎ/°ÅÀı
+// ê°€ì… ì‹ ì²­ ìŠ¹ì¸/ê±°ì ˆ
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string; userId: string }> }
 ) {
   try {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-    if (!token) return NextResponse.json({ error: '·Î±×ÀÎÀÌ ÇÊ¿äÇÕ´Ï´Ù.' }, { status: 401 });
+    if (!token) return NextResponse.json({ error: 'ë¡œê·¸ì¸ì´ í•„ìš”í•©ë‹ˆë‹¤.' }, { status: 401 });
 
     const { id: clubId, userId } = await params;
-    const { status } = await req.json(); // 'APPROVED' ¶Ç´Â 'REJECTED'
+    const { status } = await req.json(); // 'APPROVED' ë˜ëŠ” 'REJECTED'
 
     if (!['APPROVED', 'REJECTED'].includes(status)) {
-      return NextResponse.json({ error: 'À¯È¿ÇÏÁö ¾ÊÀº »óÅÂÀÔ´Ï´Ù.' }, { status: 400 });
+      return NextResponse.json({ error: 'ìœ íš¨í•˜ì§€ ì•Šì€ ìƒíƒœì…ë‹ˆë‹¤.' }, { status: 400 });
     }
 
-    // µ¿¾Æ¸® Á¤º¸ Á¶È¸
+    // ë™ì•„ë¦¬ ì •ë³´ ì¡°íšŒ
     const club = await prisma.club.findUnique({
       where: { id: clubId },
       select: { name: true },
     });
 
     if (!club) {
-      return NextResponse.json({ error: 'µ¿¾Æ¸®¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù.' }, { status: 404 });
+      return NextResponse.json({ error: 'ë™ì•„ë¦¬ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.' }, { status: 404 });
     }
 
-    // °¡ÀÔ ½ÅÃ» »óÅÂ ¾÷µ¥ÀÌÆ®
+    // ê°€ì… ì‹ ì²­ ìƒíƒœ ì—…ë°ì´íŠ¸
     const membership = await prisma.clubMember.update({
       where: {
         userId_clubId: {
@@ -40,10 +40,10 @@ export async function PATCH(
       data: { status },
     });
 
-    // ¾Ë¸² »ı¼º
+    // ì•Œë¦¼ ìƒì„±
     const message = status === 'APPROVED'
-      ? `${club.name} µ¿¾Æ¸® °¡ÀÔÀÌ ½ÂÀÎµÇ¾ú½À´Ï´Ù!`
-      : `${club.name} µ¿¾Æ¸® °¡ÀÔÀÌ °ÅÀıµÇ¾ú½À´Ï´Ù.`;
+      ? `${club.name} ë™ì•„ë¦¬ ê°€ì…ì´ ìŠ¹ì¸ë˜ì—ˆìŠµë‹ˆë‹¤!`
+      : `${club.name} ë™ì•„ë¦¬ ê°€ì…ì´ ê±°ì ˆë˜ì—ˆìŠµë‹ˆë‹¤.`;
 
     await prisma.notification.create({
       data: {
@@ -57,6 +57,6 @@ export async function PATCH(
     return NextResponse.json(membership);
   } catch (err) {
     console.error('[MEMBER PATCH ERROR]', err);
-    return NextResponse.json({ error: '¼­¹ö ¿À·ù°¡ ¹ß»ıÇß½À´Ï´Ù.' }, { status: 500 });
+    return NextResponse.json({ error: 'ì„œë²„ ì˜¤ë¥˜ê°€ ë°œìƒí–ˆìŠµë‹ˆë‹¤.' }, { status: 500 });
   }
 }

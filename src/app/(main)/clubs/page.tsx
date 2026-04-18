@@ -9,9 +9,9 @@ import { categoryColor, cn } from '@/lib/utils';
 
 const CATEGORIES: ClubCategory[] = ['academic', 'hobby', 'performance', 'sports', 'volunteer', 'religion', 'etc'];
 const SORT_OPTIONS = [
-  { value: 'popular', label: 'ÀÎ±â¼ø' },
-  { value: 'members', label: 'ÀÎ¿ø¼ø' },
-  { value: 'name',    label: 'ÀÌ¸§¼ø' },
+  { value: 'popular', label: 'ì¸ê¸°ìˆœ' },
+  { value: 'members', label: 'ì¸ì›ìˆœ' },
+  { value: 'name',    label: 'ì´ë¦„ìˆœ' },
 ] as const;
 
 type SortKey = 'popular' | 'members' | 'name';
@@ -43,15 +43,15 @@ export default function ClubsPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
 
-      {/* ¦¡¦¡ Page header ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ */}
+      {/* â”€â”€ Page header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="mb-7">
-        <h1 className="text-2xl font-serif font-bold text-[var(--txt)] mb-1">µ¿¾Æ¸® Å½»ö</h1>
+        <h1 className="text-2xl font-serif font-bold text-[var(--txt)] mb-1">ë™ì•„ë¦¬ íƒìƒ‰</h1>
         <p className="text-sm text-[var(--txt2)]">
-          ÇÑ¸²´ëÇĞ±³ÀÇ ¸ğµç µ¿¾Æ¸®¸¦ Å½»öÇÏ°í ¸¶À½¿¡ µå´Â °÷¿¡ °¡ÀÔÇØº¸¼¼¿ä
+          í•œë¦¼ëŒ€í•™êµì˜ ëª¨ë“  ë™ì•„ë¦¬ë¥¼ íƒìƒ‰í•˜ê³  ë§ˆìŒì— ë“œëŠ” ê³³ì— ê°€ì…í•´ë³´ì„¸ìš”
         </p>
       </div>
 
-      {/* ¦¡¦¡ Search + filter bar ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ */}
+      {/* â”€â”€ Search + filter bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="mb-6 space-y-3">
         {/* Search */}
         <div className="flex gap-2">
@@ -59,7 +59,7 @@ export default function ClubsPage() {
             <Search size={14} className="text-[var(--txt3)] flex-shrink-0" />
             <input
               className="flex-1 bg-transparent text-sm text-[var(--txt)] placeholder:text-[var(--txt3)] outline-none"
-              placeholder="µ¿¾Æ¸® ÀÌ¸§, ÅÂ±×, ¼³¸íÀ¸·Î °Ë»ö..."
+              placeholder="ë™ì•„ë¦¬ ì´ë¦„, íƒœê·¸, ì„¤ëª…ìœ¼ë¡œ ê²€ìƒ‰..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -79,7 +79,7 @@ export default function ClubsPage() {
             )}
           >
             <SlidersHorizontal size={14} />
-            ÇÊÅÍ
+            í•„í„°
             {hasFilter && (
               <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full" />
             )}
@@ -91,7 +91,7 @@ export default function ClubsPage() {
           <div className="bg-[var(--bg)] border border-[var(--bdr)] rounded-xl p-4 shadow-sm animate-fade-in space-y-4">
             {/* Category */}
             <div>
-              <p className="text-xs font-semibold text-[var(--txt3)] mb-2 uppercase tracking-wide">ºĞ°ú</p>
+              <p className="text-xs font-semibold text-[var(--txt3)] mb-2 uppercase tracking-wide">ë¶„ê³¼</p>
               <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => setCategory('all')}
@@ -102,7 +102,7 @@ export default function ClubsPage() {
                       : 'bg-[var(--bg2)] text-[var(--txt2)] border-[var(--bdr)] hover:bg-[var(--bg3)]',
                   )}
                 >
-                  ÀüÃ¼
+                  ì „ì²´
                 </button>
                 {CATEGORIES.map((cat) => (
                   <button
@@ -136,11 +136,11 @@ export default function ClubsPage() {
                     recruiting ? 'left-4.5' : 'left-0.5',
                   )} />
                 </div>
-                <span className="text-xs font-medium text-[var(--txt2)]">¸ğÁı Áß¸¸ º¸±â</span>
+                <span className="text-xs font-medium text-[var(--txt2)]">ëª¨ì§‘ ì¤‘ë§Œ ë³´ê¸°</span>
               </label>
 
               <div className="flex items-center gap-2 ml-auto">
-                <span className="text-xs text-[var(--txt3)]">Á¤·Ä:</span>
+                <span className="text-xs text-[var(--txt3)]">ì •ë ¬:</span>
                 <div className="flex gap-1">
                   {SORT_OPTIONS.map((opt) => (
                     <button
@@ -166,17 +166,17 @@ export default function ClubsPage() {
                 onClick={() => { setCategory('all'); setRecruiting(false); setSearch(''); }}
                 className="text-xs text-rose-500 hover:text-rose-700 font-medium flex items-center gap-1 cursor-pointer"
               >
-                <X size={11} /> ÇÊÅÍ ÃÊ±âÈ­
+                <X size={11} /> í•„í„° ì´ˆê¸°í™”
               </button>
             )}
           </div>
         )}
       </div>
 
-      {/* ¦¡¦¡ Result header ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ */}
+      {/* â”€â”€ Result header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="flex items-center gap-3 mb-4">
         <span className="text-sm text-[var(--txt2)]">
-          <span className="font-semibold text-[var(--txt)]">{filtered.length}°³</span>ÀÇ µ¿¾Æ¸®
+          <span className="font-semibold text-[var(--txt)]">{filtered.length}ê°œ</span>ì˜ ë™ì•„ë¦¬
         </span>
         {category !== 'all' && (
           <span className={cn('text-xs px-2 py-0.5 rounded-full font-medium', categoryColor(category))}>
@@ -185,12 +185,12 @@ export default function ClubsPage() {
         )}
         {recruiting && (
           <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-emerald-50 text-emerald-600">
-            ¸ğÁı Áß
+            ëª¨ì§‘ ì¤‘
           </span>
         )}
       </div>
 
-      {/* ¦¡¦¡ Grid ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ */}
+      {/* â”€â”€ Grid â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {filtered.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {filtered.map((club, i) => (
@@ -200,27 +200,27 @@ export default function ClubsPage() {
       ) : (
         <div className="flex flex-col items-center justify-center py-24 text-center animate-fade-in">
           <div className="text-5xl mb-4 opacity-30">?</div>
-          <p className="text-sm font-medium text-[var(--txt)] mb-1">°Ë»ö °á°ú°¡ ¾ø½À´Ï´Ù</p>
-          <p className="text-xs text-[var(--txt2)] mb-4">´Ù¸¥ Å°¿öµå³ª ºĞ°ú·Î °Ë»öÇØº¸¼¼¿ä</p>
+          <p className="text-sm font-medium text-[var(--txt)] mb-1">ê²€ìƒ‰ ê²°ê³¼ê°€ ì—†ìŠµë‹ˆë‹¤</p>
+          <p className="text-xs text-[var(--txt2)] mb-4">ë‹¤ë¥¸ í‚¤ì›Œë“œë‚˜ ë¶„ê³¼ë¡œ ê²€ìƒ‰í•´ë³´ì„¸ìš”</p>
           <button
             onClick={() => { setSearch(''); setCategory('all'); setRecruiting(false); }}
             className="text-xs text-indigo-500 hover:text-indigo-700 font-medium flex items-center gap-1 cursor-pointer"
           >
-            <X size={12} /> ÇÊÅÍ ÃÊ±âÈ­
+            <X size={12} /> í•„í„° ì´ˆê¸°í™”
           </button>
         </div>
       )}
 
-      {/* ¦¡¦¡ Promo card ¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡ */}
+      {/* â”€â”€ Promo card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {filtered.length > 0 && (
         <div className="mt-10 bg-[var(--bg)] border border-[var(--bdr)] rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center flex-shrink-0">
             <Users size={18} className="text-indigo-500" />
           </div>
           <div className="flex-1">
-            <p className="text-sm font-semibold text-[var(--txt)] mb-0.5">Á÷Á¢ µ¿¾Æ¸®¸¦ ¸¸µé°í ½Í³ª¿ä?</p>
+            <p className="text-sm font-semibold text-[var(--txt)] mb-0.5">ì§ì ‘ ë™ì•„ë¦¬ë¥¼ ë§Œë“¤ê³  ì‹¶ë‚˜ìš”?</p>
             <p className="text-xs text-[var(--txt2)]">
-              µ¿¾Æ¸® °³¼³ ½ÅÃ»Àº ÇĞ»ıÃ³¸¦ ÅëÇØ ÁøÇàµË´Ï´Ù. 10¸í ÀÌ»óÀÇ È¸¿øÀÌ ÇÊ¿äÇÕ´Ï´Ù.
+              ë™ì•„ë¦¬ ê°œì„¤ ì‹ ì²­ì€ í•™ìƒì²˜ë¥¼ í†µí•´ ì§„í–‰ë©ë‹ˆë‹¤. 10ëª… ì´ìƒì˜ íšŒì›ì´ í•„ìš”í•©ë‹ˆë‹¤.
             </p>
           </div>
           <a
@@ -229,7 +229,7 @@ export default function ClubsPage() {
             rel="noopener noreferrer"
             className="flex-shrink-0 text-xs font-medium text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
           >
-            ÇĞ»ıÃ³ ¹Ù·Î°¡±â ¡æ
+            í•™ìƒì²˜ ë°”ë¡œê°€ê¸° â†’
           </a>
         </div>
       )}

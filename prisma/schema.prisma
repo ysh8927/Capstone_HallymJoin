@@ -175,9 +175,10 @@ model Notification {
 }
 
 enum NotifType {
-  comment
-  like
-  notice
-  join
-  reply
+  COMMENT
+  LIKE
+  NOTICE
+  JOIN
+  REPLY
+  JOIN_APPROVED
 }
