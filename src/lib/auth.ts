@@ -22,15 +22,24 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           password: string;
         };
 
-        if (!studentId || !password) return null;
+        console.log('[AUTH] 로그인 시도:', studentId);
+
+        if (!studentId || !password) {
+          console.log('[AUTH] 학번 또는 비밀번호 없음');
+          return null;
+        }
 
         const user = await prisma.user.findUnique({
           where: { studentId },
         });
 
+        console.log('[AUTH] 유저 조회 결과:', user ? '찾음' : '없음');
+
         if (!user) return null;
 
         const isValid = await bcrypt.compare(password, user.password);
+        console.log('[AUTH] 비밀번호 검증:', isValid);
+
         if (!isValid) return null;
 
         return {

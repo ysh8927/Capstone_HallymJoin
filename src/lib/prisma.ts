@@ -1,12 +1,10 @@
-import 'dotenv/config';
+// src/lib/prisma.ts
 import { PrismaClient } from '@prisma/client';
-import { PrismaNeon } from '@prisma/adapter-neon';
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
 function createPrismaClient() {
-  const adapter = new PrismaNeon({ connectionString: process.env.DIRECT_URL! });
-  return new PrismaClient({ adapter });
+  return new PrismaClient();
 }
 
 export const prisma = globalForPrisma.prisma ?? createPrismaClient();
