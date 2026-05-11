@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
-
-const verificationCodes = new Map<string, { code: string; expires: number }>();
+import { prisma } from '@/lib/prisma';
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -19,8 +18,13 @@ export async function POST(req: NextRequest) {
     }
 
     const code = Math.floor(100000 + Math.random() * 900000).toString();
-    const expires = Date.now() + 5 * 60 * 1000;
-    verificationCodes.set(email, { code, expires });
+    const expiresAt = Date.now() + 5 * 60 * 1000;
+
+    await prisma.$executeRaw`
+      INSERT INTO verification_codes (email, code, expires_at)
+      VALUES (${email}, ${code}, ${expiresAt})
+      ON CONFLICT (email) DO UPDATE SET code = ${code}, expires_at = ${expiresAt}
+    `;
 
     await transporter.sendMail({
       from: `"한림 클럽링크" <${process.env.GMAIL_USER}>`,
@@ -52,19 +56,26 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: 'Email and code required' }, { status: 400 });
     }
 
-    const stored = verificationCodes.get(email);
-    if (!stored) {
+    const result = await prisma.$queryRaw<{ code: string; expires_at: bigint }[]>`
+      SELECT code, expires_at FROM verification_codes WHERE email = ${email}
+    `;
+
+    if (!result || result.length === 0) {
       return NextResponse.json({ error: 'No code found' }, { status: 400 });
     }
-    if (Date.now() > stored.expires) {
-      verificationCodes.delete(email);
+
+    const stored = result[0];
+
+    if (Date.now() > Number(stored.expires_at)) {
+      await prisma.$executeRaw`DELETE FROM verification_codes WHERE email = ${email}`;
       return NextResponse.json({ error: 'Code expired' }, { status: 400 });
     }
+
     if (stored.code !== code) {
       return NextResponse.json({ error: 'Invalid code' }, { status: 400 });
     }
 
-    verificationCodes.delete(email);
+    await prisma.$executeRaw`DELETE FROM verification_codes WHERE email = ${email}`;
     return NextResponse.json({ success: true, message: 'Verified' });
   } catch (err) {
     console.error('[VERIFY CODE ERROR]', err);
