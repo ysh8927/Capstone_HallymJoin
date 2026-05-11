@@ -172,7 +172,6 @@ export default function SignupPage() {
               <InfoBox>
                 학번 이메일(<strong>{studentId || 'XXXXXXXX'}@hallym.ac.kr</strong>)로 인증 코드가 발송됩니다.
                 한림대학교 재학·휴학생만 가입 가능합니다.
-                <br/><span className="text-amber-600 font-medium">💡 개발 중: 콘솔에서 인증 코드를 확인하세요</span>
               </InfoBox>
               {error && <ErrorBox msg={error} />}
               <button onClick={sendCode} disabled={loading || studentId.length < 8}
@@ -188,7 +187,7 @@ export default function SignupPage() {
             <div className="space-y-4">
               <InfoBox icon="✉️">
                 <strong>{email}</strong>으로 6자리 인증 코드를 발송했습니다.
-                <br/><span className="text-amber-600 font-medium">💡 개발 중: VSCode 터미널(콘솔)에서 인증 코드를 확인하세요!</span>
+                이메일을 확인해주세요.
               </InfoBox>
               <div>
                 <label className="block text-xs font-semibold text-[var(--txt2)] mb-1.5">인증 코드 (6자리)</label>
