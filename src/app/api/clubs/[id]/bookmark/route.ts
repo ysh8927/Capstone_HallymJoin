@@ -1,23 +1,22 @@
-import 'dotenv/config';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getToken } from 'next-auth/jwt';
 
-// 북마크 추가
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    const token = await getToken({ 
+      req, 
+      secret: process.env.NEXTAUTH_SECRET,
+      cookieName: process.env.NODE_ENV === 'production'
+        ? '__Secure-authjs.session-token'
+        : 'authjs.session-token',
+    });
     if (!token) return NextResponse.json({ error: '로그인이 필요합니다.' }, { status: 401 });
 
     const { id: clubId } = await params;
 
     const existing = await prisma.bookmark.findUnique({
-      where: {
-        userId_clubId: {
-          userId: token.id as string,
-          clubId,
-        },
-      },
+      where: { userId_clubId: { userId: token.id as string, clubId } },
     });
 
     if (existing) {
@@ -25,10 +24,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     }
 
     const bookmark = await prisma.bookmark.create({
-      data: {
-        userId: token.id as string,
-        clubId,
-      },
+      data: { userId: token.id as string, clubId },
     });
 
     return NextResponse.json(bookmark, { status: 201 });
@@ -38,21 +34,21 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   }
 }
 
-// 북마크 삭제
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    const token = await getToken({ 
+      req, 
+      secret: process.env.NEXTAUTH_SECRET,
+      cookieName: process.env.NODE_ENV === 'production'
+        ? '__Secure-authjs.session-token'
+        : 'authjs.session-token',
+    });
     if (!token) return NextResponse.json({ error: '로그인이 필요합니다.' }, { status: 401 });
 
     const { id: clubId } = await params;
 
     await prisma.bookmark.delete({
-      where: {
-        userId_clubId: {
-          userId: token.id as string,
-          clubId,
-        },
-      },
+      where: { userId_clubId: { userId: token.id as string, clubId } },
     });
 
     return NextResponse.json({ success: true });
