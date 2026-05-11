@@ -1,12 +1,14 @@
-import 'dotenv/config';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getToken } from 'next-auth/jwt';
 
-// 알림 목록 조회
+const cookieName = process.env.NODE_ENV === 'production'
+  ? '__Secure-authjs.session-token'
+  : 'authjs.session-token';
+
 export async function GET(req: NextRequest) {
   try {
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET, cookieName });
     if (!token) return NextResponse.json({ error: '로그인이 필요합니다.' }, { status: 401 });
 
     const notifications = await prisma.notification.findMany({
@@ -22,10 +24,9 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// 알림 읽음 처리
 export async function PATCH(req: NextRequest) {
   try {
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET, cookieName });
     if (!token) return NextResponse.json({ error: '로그인이 필요합니다.' }, { status: 401 });
 
     const { notificationId } = await req.json();
