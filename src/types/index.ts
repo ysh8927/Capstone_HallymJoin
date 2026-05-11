@@ -78,7 +78,7 @@ export interface User {
 }
 
 // ─── 알림 ────────────────────────────────────────────────────
-export type NotifType = 'comment' | 'like' | 'notice' | 'join' | 'reply';
+export type NotifType = 'comment' | 'like' | 'notice' | 'join' | 'reply' | 'JOIN_APPROVED';
 
 export interface Notification {
   id: string;
