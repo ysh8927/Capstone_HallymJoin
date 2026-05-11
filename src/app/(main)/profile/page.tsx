@@ -5,7 +5,7 @@ import {
   User, Mail, BookOpen, GraduationCap, KeyRound,
   Eye, EyeOff, CheckCircle, AlertCircle, Bell, Shield,
 } from 'lucide-react';
-import { MOCK_USER } from '@/data/mockUser';
+import { useSession } from 'next-auth/react';
 import { cn } from '@/lib/utils';
 
 function inputCls(err?: boolean) {
@@ -19,10 +19,13 @@ function inputCls(err?: boolean) {
 type Tab = 'profile' | 'security' | 'notifications';
 
 export default function ProfilePage() {
+  const { data: session } = useSession();
+  const user = session?.user as any;
+
   const [tab,        setTab]        = useState<Tab>('profile');
-  const [name,       setName]       = useState(MOCK_USER.name);
-  const [department, setDepartment] = useState(MOCK_USER.department);
-  const [grade,      setGrade]      = useState(MOCK_USER.grade);
+  const [name,       setName]       = useState(user?.name ?? '');
+  const [department, setDepartment] = useState(user?.department ?? '');
+  const [grade,      setGrade]      = useState(user?.grade ?? '1');
   const [saved,      setSaved]      = useState(false);
   const [error,      setError]      = useState('');
 
@@ -69,7 +72,6 @@ export default function ProfilePage() {
         <p className="text-xs text-[var(--txt3)] mt-1">계정 정보와 알림 설정을 관리합니다.</p>
       </div>
 
-      {/* Tabs */}
       <div className="flex gap-1 p-1 bg-[var(--bg2)] rounded-xl border border-[var(--bdr)] mb-6">
         {TABS.map(({ id, label, icon }) => (
           <button
@@ -87,23 +89,20 @@ export default function ProfilePage() {
         ))}
       </div>
 
-      {/* ── Profile tab ── */}
       {tab === 'profile' && (
         <div className="bg-[var(--bg)] rounded-2xl border border-[var(--bdr)] p-6 space-y-5">
-          {/* Avatar */}
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold">
               {name[0] || '?'}
             </div>
             <div>
-              <p className="text-sm font-semibold text-[var(--txt)]">{MOCK_USER.email}</p>
-              <p className="text-xs text-[var(--txt3)] mt-0.5">학번: {MOCK_USER.studentId}</p>
+              <p className="text-sm font-semibold text-[var(--txt)]">{user?.email}</p>
+              <p className="text-xs text-[var(--txt3)] mt-0.5">학번: {user?.studentId}</p>
             </div>
           </div>
 
           <div className="h-px bg-[var(--bdr)]" />
 
-          {/* Fields */}
           <div>
             <label className="block text-xs font-semibold text-[var(--txt2)] mb-1.5 flex items-center gap-1.5">
               <User size={12} /> 이름
@@ -132,7 +131,7 @@ export default function ProfilePage() {
             <label className="block text-xs font-semibold text-[var(--txt2)] mb-1.5 flex items-center gap-1.5">
               <Mail size={12} /> 이메일 (변경 불가)
             </label>
-            <input type="text" value={MOCK_USER.email} disabled className={cn(inputCls(), 'opacity-50 cursor-not-allowed')} />
+            <input type="text" value={user?.email ?? ''} disabled className={cn(inputCls(), 'opacity-50 cursor-not-allowed')} />
           </div>
 
           {error && (
@@ -142,22 +141,19 @@ export default function ProfilePage() {
             </div>
           )}
           {saved && (
-            <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2.5 animate-fade-in">
+            <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2.5">
               <CheckCircle size={13} className="text-emerald-500" />
               <p className="text-xs text-emerald-600 font-medium">저장되었습니다.</p>
             </div>
           )}
 
-          <button
-            onClick={saveProfile}
-            className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-colors cursor-pointer"
-          >
+          <button onClick={saveProfile}
+            className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-colors cursor-pointer">
             변경 사항 저장
           </button>
         </div>
       )}
 
-      {/* ── Security tab ── */}
       {tab === 'security' && (
         <div className="bg-[var(--bg)] rounded-2xl border border-[var(--bdr)] p-6 space-y-5">
           <h2 className="text-sm font-semibold text-[var(--txt)] flex items-center gap-2">
@@ -196,7 +192,7 @@ export default function ProfilePage() {
             </div>
           )}
           {pwSaved && (
-            <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2.5 animate-fade-in">
+            <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2.5">
               <CheckCircle size={13} className="text-emerald-500" />
               <p className="text-xs text-emerald-600 font-medium">비밀번호가 변경되었습니다.</p>
             </div>
@@ -208,38 +204,28 @@ export default function ProfilePage() {
         </div>
       )}
 
-      {/* ── Notifications tab ── */}
       {tab === 'notifications' && (
         <div className="bg-[var(--bg)] rounded-2xl border border-[var(--bdr)] p-6 space-y-1">
           <h2 className="text-sm font-semibold text-[var(--txt)] mb-4 flex items-center gap-2">
             <Bell size={14} className="text-indigo-500" /> 알림 수신 설정
           </h2>
           {[
-            { label: '댓글 알림',    desc: '내 게시글에 댓글이 달릴 때',     value: notifComment, set: setNotifComment },
-            { label: '좋아요 알림',  desc: '내 게시글에 좋아요가 달릴 때',   value: notifLike,    set: setNotifLike    },
-            { label: '공지 알림',    desc: '가입한 동아리에 공지가 올라올 때', value: notifNotice, set: setNotifNotice  },
-            { label: '가입 승인 알림', desc: '동아리 가입 신청이 처리될 때',  value: notifJoin,   set: setNotifJoin    },
+            { label: '댓글 알림',      desc: '내 게시글에 댓글이 달릴 때',      value: notifComment, set: setNotifComment },
+            { label: '좋아요 알림',    desc: '내 게시글에 좋아요가 달릴 때',    value: notifLike,    set: setNotifLike    },
+            { label: '공지 알림',      desc: '가입한 동아리에 공지가 올라올 때', value: notifNotice,  set: setNotifNotice  },
+            { label: '가입 승인 알림', desc: '동아리 가입 신청이 처리될 때',     value: notifJoin,    set: setNotifJoin    },
           ].map(({ label, desc, value, set }) => (
-            <label
-              key={label}
-              className="flex items-center justify-between gap-4 px-4 py-3 rounded-xl hover:bg-[var(--bg2)] transition-colors cursor-pointer"
-            >
+            <label key={label}
+              className="flex items-center justify-between gap-4 px-4 py-3 rounded-xl hover:bg-[var(--bg2)] transition-colors cursor-pointer">
               <div>
                 <p className="text-sm font-medium text-[var(--txt)]">{label}</p>
                 <p className="text-xs text-[var(--txt3)] mt-0.5">{desc}</p>
               </div>
-              <div
-                onClick={() => set(!value)}
-                className={cn(
-                  'relative w-10 h-5.5 rounded-full transition-colors flex-shrink-0',
-                  value ? 'bg-indigo-600' : 'bg-[var(--bg3)]',
-                )}
-                style={{ height: '22px', width: '40px' }}
-              >
-                <span className={cn(
-                  'absolute top-0.5 w-4.5 h-4.5 bg-white rounded-full shadow transition-transform',
-                  value ? 'translate-x-[19px]' : 'translate-x-0.5',
-                )} style={{ width: '18px', height: '18px', top: '2px', transitionProperty: 'transform' }} />
+              <div onClick={() => set(!value)}
+                className={cn('relative rounded-full transition-colors flex-shrink-0', value ? 'bg-indigo-600' : 'bg-[var(--bg3)]')}
+                style={{ height: '22px', width: '40px' }}>
+                <span className={cn('absolute bg-white rounded-full shadow transition-transform', value ? 'translate-x-[19px]' : 'translate-x-0.5')}
+                  style={{ width: '18px', height: '18px', top: '2px' }} />
               </div>
             </label>
           ))}
