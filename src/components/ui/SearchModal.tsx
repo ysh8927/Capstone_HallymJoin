@@ -21,7 +21,6 @@ export default function SearchModal({ open, onClose }: SearchModalProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  // Focus input when opened
   useEffect(() => {
     if (open) {
       setTimeout(() => inputRef.current?.focus(), 50);
@@ -29,7 +28,6 @@ export default function SearchModal({ open, onClose }: SearchModalProps) {
     }
   }, [open]);
 
-  // Close on Escape
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === 'Escape') onClose();
@@ -56,7 +54,7 @@ export default function SearchModal({ open, onClose }: SearchModalProps) {
   function goSearch() {
     if (!query.trim()) return;
     onClose();
-    router.push(`/clubs?q=${encodeURIComponent(query.trim())}`);
+    router.push(`/clubs?search=${encodeURIComponent(query.trim())}`);
   }
 
   if (!open) return null;
@@ -66,12 +64,9 @@ export default function SearchModal({ open, onClose }: SearchModalProps) {
       className="fixed inset-0 z-50 flex items-start justify-center pt-[10vh] px-4 animate-fade-in"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      {/* Backdrop */}
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
 
-      {/* Modal */}
       <div className="relative w-full max-w-xl bg-[var(--bg)] rounded-2xl border border-[var(--bdr)] shadow-2xl overflow-hidden animate-fade-up">
-        {/* Search input */}
         <div className="flex items-center gap-3 px-4 py-3.5 border-b border-[var(--bdr)]">
           <Search size={16} className="text-[var(--txt3)] flex-shrink-0" />
           <input
@@ -91,7 +86,6 @@ export default function SearchModal({ open, onClose }: SearchModalProps) {
         </div>
 
         <div className="max-h-[60vh] overflow-y-auto">
-          {/* Results */}
           {results.length > 0 && (
             <div className="p-2">
               {results.map((club) => (
@@ -125,7 +119,6 @@ export default function SearchModal({ open, onClose }: SearchModalProps) {
             </div>
           )}
 
-          {/* No results */}
           {query.trim().length > 0 && results.length === 0 && (
             <div className="px-4 py-8 text-center text-sm text-[var(--txt3)]">
               <p className="mb-1">"{query}"에 대한 검색 결과가 없습니다.</p>
@@ -133,7 +126,6 @@ export default function SearchModal({ open, onClose }: SearchModalProps) {
             </div>
           )}
 
-          {/* Empty state — recent & trending */}
           {!query && (
             <div className="p-4 space-y-5">
               <div>
