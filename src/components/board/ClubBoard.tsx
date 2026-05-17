@@ -32,7 +32,7 @@ export default function ClubBoard({ posts: initialPosts, pinnedPost, clubId }: C
   const [search, setSearch] = useState('');
   const [sort,   setSort]   = useState<'latest' | 'popular' | 'comment'>('latest');
   const [openId, setOpenId] = useState<string | null>(null);
-  const [liked,  setLiked]  = useState<Set<string>>(new Set());
+  const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
   const [newComment, setNewComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -78,12 +78,53 @@ export default function ClubBoard({ posts: initialPosts, pinnedPost, clubId }: C
     setSubmitting(false);
   }
 
+  async function handleCommentLike(postId: string, commentId: string) {
+    try {
+      const res = await fetch(`/api/posts/${postId}/comments`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ commentId }),
+      });
+      if (res.ok) {
+        setPosts((prev) => prev.map((p) =>
+          p.id === postId
+            ? { ...p, comments: p.comments.map((c) =>
+                c.id === commentId ? { ...c, likes: c.likes + 1 } : c
+              )}
+            : p
+        ));
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function handlePostLike(postId: string) {
+    if (likedPosts.has(postId)) return;
+    try {
+      const res = await fetch(`/api/posts/${postId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'like' }),
+      });
+      if (res.ok) {
+        setLikedPosts((s) => new Set(s).add(postId));
+        setPosts((prev) => prev.map((p) =>
+          p.id === postId ? { ...p, likes: p.likes + 1 } : p
+        ));
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   if (openPost) {
     return (
       <PostDetail
         post={openPost}
-        liked={liked.has(openPost.id)}
-        onToggleLike={() => setLiked((s) => { const n = new Set(s); n.has(openPost.id) ? n.delete(openPost.id) : n.add(openPost.id); return n; })}
+        liked={likedPosts.has(openPost.id)}
+        onToggleLike={() => handlePostLike(openPost.id)}
+        onCommentLike={(commentId) => handleCommentLike(openPost.id, commentId)}
         newComment={newComment}
         onCommentChange={setNewComment}
         onBack={() => setOpenId(null)}
@@ -196,6 +237,7 @@ interface PostDetailProps {
   post: Post;
   liked: boolean;
   onToggleLike: () => void;
+  onCommentLike: (commentId: string) => void;
   newComment: string;
   onCommentChange: (v: string) => void;
   onBack: () => void;
@@ -203,7 +245,7 @@ interface PostDetailProps {
   submitting: boolean;
 }
 
-function PostDetail({ post, liked, onToggleLike, newComment, onCommentChange, onBack, onCommentSubmit, submitting }: PostDetailProps) {
+function PostDetail({ post, liked, onToggleLike, onCommentLike, newComment, onCommentChange, onBack, onCommentSubmit, submitting }: PostDetailProps) {
   return (
     <div className="animate-fade-in">
       <button onClick={onBack} className="flex items-center gap-1 text-xs text-[var(--txt2)] hover:text-[var(--txt)] mb-4 cursor-pointer">
@@ -244,7 +286,7 @@ function PostDetail({ post, liked, onToggleLike, newComment, onCommentChange, on
             liked ? 'bg-rose-50 text-rose-500 border-rose-200' : 'bg-[var(--bg2)] text-[var(--txt2)] border-[var(--bdr)] hover:bg-[var(--bg3)]',
           )}>
           <Heart size={15} className={liked ? 'fill-rose-500' : ''} />
-          {post.likes + (liked ? 1 : 0)}
+          {post.likes}
         </button>
         <button className="flex items-center gap-2 px-5 py-2 rounded-full border border-[var(--bdr)] bg-[var(--bg2)] text-sm text-[var(--txt2)] font-medium cursor-pointer hover:bg-[var(--bg3)] transition-colors">
           <MessageSquare size={15} />
@@ -275,7 +317,9 @@ function PostDetail({ post, liked, onToggleLike, newComment, onCommentChange, on
                   {c.text}
                 </div>
                 <div className="flex items-center gap-3 mt-1.5">
-                  <button className="text-[11px] text-[var(--txt3)] hover:text-rose-500 flex items-center gap-1 cursor-pointer transition-colors">
+                  <button
+                    onClick={() => onCommentLike(c.id)}
+                    className="text-[11px] text-[var(--txt3)] hover:text-rose-500 flex items-center gap-1 cursor-pointer transition-colors">
                     <Heart size={10} /> {c.likes}
                   </button>
                 </div>

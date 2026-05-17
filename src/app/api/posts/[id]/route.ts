@@ -1,13 +1,22 @@
-import 'dotenv/config';
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getToken } from 'next-auth/jwt';
 
-export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+const cookieName = process.env.NODE_ENV === 'production'
+  ? '__Secure-authjs.session-token'
+  : 'authjs.session-token';
+
+export async function GET(req: NextRequest) {
   try {
-    const { id } = await params;
+    const { searchParams } = new URL(req.url);
+    const clubId = searchParams.get('clubId');
 
-    const post = await prisma.post.findUnique({
-      where: { id },
+    if (!clubId) {
+      return NextResponse.json({ error: 'clubId가 필요합니다.' }, { status: 400 });
+    }
+
+    const posts = await prisma.post.findMany({
+      where: { clubId },
       include: {
         author: { select: { id: true, name: true, studentId: true } },
         comments: {
@@ -17,18 +26,64 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
           orderBy: { createdAt: 'asc' },
         },
       },
+      orderBy: [{ isPinned: 'desc' }, { createdAt: 'desc' }],
     });
 
-    if (!post) return NextResponse.json({ error: '게시글을 찾을 수 없습니다.' }, { status: 404 });
-
-    await prisma.post.update({
-      where: { id },
-      data: { views: { increment: 1 } },
-    });
-
-    return NextResponse.json(post);
+    return NextResponse.json(posts);
   } catch (err) {
-    console.error('[POST GET ERROR]', err);
+    console.error('[POSTS GET ERROR]', err);
+    return NextResponse.json({ error: '서버 오류가 발생했습니다.' }, { status: 500 });
+  }
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET, cookieName });
+    if (!token) return NextResponse.json({ error: '로그인이 필요합니다.' }, { status: 401 });
+
+    const { clubId, category, title, body, isPinned } = await req.json();
+
+    if (!clubId || !category || !title || !body) {
+      return NextResponse.json({ error: '필수 항목을 모두 입력해주세요.' }, { status: 400 });
+    }
+
+    const post = await prisma.post.create({
+      data: {
+        clubId,
+        authorId: token.id as string,
+        category,
+        title,
+        body,
+        isPinned: isPinned ?? false,
+      },
+    });
+
+    return NextResponse.json(post, { status: 201 });
+  } catch (err) {
+    console.error('[POSTS POST ERROR]', err);
+    return NextResponse.json({ error: '서버 오류가 발생했습니다.' }, { status: 500 });
+  }
+}
+
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET, cookieName });
+    if (!token) return NextResponse.json({ error: '로그인이 필요합니다.' }, { status: 401 });
+
+    const { id: postId } = await params;
+    const { action } = await req.json();
+
+    if (action === 'like') {
+      const post = await prisma.post.update({
+        where: { id: postId },
+        data: { likes: { increment: 1 } },
+      });
+      return NextResponse.json(post);
+    }
+
+    return NextResponse.json({ error: '잘못된 요청입니다.' }, { status: 400 });
+  } catch (err) {
+    console.error('[POST PATCH ERROR]', err);
     return NextResponse.json({ error: '서버 오류가 발생했습니다.' }, { status: 500 });
   }
 }
