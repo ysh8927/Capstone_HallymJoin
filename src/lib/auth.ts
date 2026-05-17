@@ -1,4 +1,3 @@
-// src/lib/auth.ts
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
@@ -43,11 +42,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!isValid) return null;
 
         return {
-          id:        user.id,
-          name:      user.name,
-          email:     user.email,
-          studentId: user.studentId,
-          role:      user.role,
+          id:         user.id,
+          name:       user.name,
+          email:      user.email,
+          studentId:  user.studentId,
+          role:       user.role,
+          department: user.department,
+          grade:      user.grade,
         };
       },
     }),
@@ -58,19 +59,29 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       else if (new URL(url).origin === baseUrl) return url;
       return baseUrl;
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
-        token.id        = user.id;
-        token.studentId = (user as any).studentId;
-        token.role      = (user as any).role;
+        token.id         = user.id;
+        token.studentId  = (user as any).studentId;
+        token.role       = (user as any).role;
+        token.department = (user as any).department;
+        token.grade      = (user as any).grade;
+      }
+      // 프로필 업데이트 시 세션 갱신
+      if (trigger === 'update' && session) {
+        token.name       = session.name       ?? token.name;
+        token.department = session.department ?? token.department;
+        token.grade      = session.grade      ?? token.grade;
       }
       return token;
     },
     async session({ session, token }) {
       if (token) {
-        session.user.id        = token.id as string;
-        (session.user as any).studentId = token.studentId;
-        (session.user as any).role      = token.role;
+        session.user.id                        = token.id as string;
+        (session.user as any).studentId        = token.studentId;
+        (session.user as any).role             = token.role;
+        (session.user as any).department       = token.department;
+        (session.user as any).grade            = token.grade;
       }
       return session;
     },
