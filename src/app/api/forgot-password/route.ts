@@ -11,7 +11,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// 인증 코드 발송
 export async function POST(req: NextRequest) {
   try {
     const { email } = await req.json();
@@ -52,7 +51,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// 코드 검증
+// 코드 검증만 하고 삭제 안 함
 export async function PATCH(req: NextRequest) {
   try {
     const { email, code } = await req.json();
@@ -76,6 +75,7 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: '인증 코드가 올바르지 않습니다.' }, { status: 400 });
     }
 
+    // 삭제하지 않고 검증만 함 (PUT에서 사용)
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error('[VERIFY RESET CODE ERROR]', err);
@@ -83,7 +83,7 @@ export async function PATCH(req: NextRequest) {
   }
 }
 
-// 비밀번호 변경
+// 비밀번호 변경 후 코드 삭제
 export async function PUT(req: NextRequest) {
   try {
     const { email, code, password } = await req.json();
