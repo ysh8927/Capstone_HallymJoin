@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { Search, SlidersHorizontal, X, Users, TrendingUp } from 'lucide-react';
+import { useState, useMemo, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { Search, SlidersHorizontal, X, Users } from 'lucide-react';
 import { CLUBS } from '@/data/clubs';
 import ClubCard from '@/components/clubs/ClubCard';
 import { CATEGORY_LABEL, type ClubCategory } from '@/types';
@@ -16,12 +17,25 @@ const SORT_OPTIONS = [
 
 type SortKey = 'popular' | 'members' | 'name';
 
-export default function ClubsPage() {
-  const [search, setSearch]         = useState('');
-  const [category, setCategory]     = useState<ClubCategory | 'all'>('all');
-  const [recruiting, setRecruiting] = useState(false);
+function ClubsContent() {
+  const searchParams = useSearchParams();
+
+  const [search, setSearch]         = useState(searchParams.get('search') ?? '');
+  const [category, setCategory]     = useState<ClubCategory | 'all'>((searchParams.get('category') as ClubCategory) ?? 'all');
+  const [recruiting, setRecruiting] = useState(searchParams.get('recruiting') === 'true');
   const [sort, setSort]             = useState<SortKey>('popular');
-  const [showFilter, setShowFilter] = useState(false);
+  const [showFilter, setShowFilter] = useState(
+    !!searchParams.get('category') || searchParams.get('recruiting') === 'true'
+  );
+
+  useEffect(() => {
+    const s = searchParams.get('search');
+    const c = searchParams.get('category');
+    const r = searchParams.get('recruiting');
+    if (s) setSearch(s);
+    if (c) { setCategory(c as ClubCategory); setShowFilter(true); }
+    if (r === 'true') { setRecruiting(true); setShowFilter(true); }
+  }, [searchParams]);
 
   const filtered = useMemo(() => {
     let list = [...CLUBS];
@@ -43,7 +57,6 @@ export default function ClubsPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
 
-      {/* ── Page header ──────────────────────────────────── */}
       <div className="mb-7">
         <h1 className="text-2xl font-serif font-bold text-[var(--txt)] mb-1">동아리 탐색</h1>
         <p className="text-sm text-[var(--txt2)]">
@@ -51,9 +64,7 @@ export default function ClubsPage() {
         </p>
       </div>
 
-      {/* ── Search + filter bar ──────────────────────────── */}
       <div className="mb-6 space-y-3">
-        {/* Search */}
         <div className="flex gap-2">
           <div className="flex-1 flex items-center gap-2 bg-[var(--bg)] border border-[var(--bdr)] rounded-xl px-4 py-2.5 focus-within:border-indigo-400 transition-colors shadow-sm">
             <Search size={14} className="text-[var(--txt3)] flex-shrink-0" />
@@ -86,10 +97,8 @@ export default function ClubsPage() {
           </button>
         </div>
 
-        {/* Expanded filters */}
         {showFilter && (
           <div className="bg-[var(--bg)] border border-[var(--bdr)] rounded-xl p-4 shadow-sm animate-fade-in space-y-4">
-            {/* Category */}
             <div>
               <p className="text-xs font-semibold text-[var(--txt3)] mb-2 uppercase tracking-wide">분과</p>
               <div className="flex flex-wrap gap-2">
@@ -121,7 +130,6 @@ export default function ClubsPage() {
               </div>
             </div>
 
-            {/* Recruiting toggle + sort */}
             <div className="flex flex-wrap items-center gap-4">
               <label className="flex items-center gap-2 cursor-pointer select-none">
                 <div
@@ -160,7 +168,6 @@ export default function ClubsPage() {
               </div>
             </div>
 
-            {/* Reset */}
             {hasFilter && (
               <button
                 onClick={() => { setCategory('all'); setRecruiting(false); setSearch(''); }}
@@ -173,7 +180,6 @@ export default function ClubsPage() {
         )}
       </div>
 
-      {/* ── Result header ────────────────────────────────── */}
       <div className="flex items-center gap-3 mb-4">
         <span className="text-sm text-[var(--txt2)]">
           <span className="font-semibold text-[var(--txt)]">{filtered.length}개</span>의 동아리
@@ -190,7 +196,6 @@ export default function ClubsPage() {
         )}
       </div>
 
-      {/* ── Grid ─────────────────────────────────────────── */}
       {filtered.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {filtered.map((club, i) => (
@@ -211,7 +216,6 @@ export default function ClubsPage() {
         </div>
       )}
 
-      {/* ── Promo card ───────────────────────────────────── */}
       {filtered.length > 0 && (
         <div className="mt-10 bg-[var(--bg)] border border-[var(--bdr)] rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center flex-shrink-0">
@@ -234,5 +238,13 @@ export default function ClubsPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function ClubsPage() {
+  return (
+    <Suspense fallback={<div className="max-w-6xl mx-auto px-4 py-8 text-sm text-[var(--txt3)]">로딩 중...</div>}>
+      <ClubsContent />
+    </Suspense>
   );
 }
