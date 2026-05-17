@@ -24,21 +24,6 @@ interface Club {
   meetingDay: string;
 }
 
-const ACTIVITY_ICON = {
-  comment: <MessageSquare size={13} />,
-  like:    <Heart size={13} />,
-  post:    <BookOpen size={13} />,
-  join:    <UserCheck size={13} />,
-  reply:   <MessageCircleReply size={13} />,
-};
-const ACTIVITY_COLOR = {
-  comment: 'bg-blue-50 text-blue-500',
-  like:    'bg-rose-50 text-rose-500',
-  post:    'bg-indigo-50 text-indigo-500',
-  join:    'bg-emerald-50 text-emerald-500',
-  reply:   'bg-purple-50 text-purple-500',
-};
-
 export default function MyClubsPage() {
   const { data: session } = useSession();
   const user = session?.user;
@@ -69,17 +54,17 @@ export default function MyClubsPage() {
     <div className="max-w-5xl mx-auto px-4 py-8">
 
       <div className="bg-[var(--bg)] rounded-2xl border border-[var(--bdr)] overflow-hidden mb-6">
-        <div className="h-20 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
-        <div className="px-6 pb-5">
-          <div className="flex items-end gap-4 -mt-8 mb-4">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 border-4 border-[var(--bg)] flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+        <div className="h-24 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+        <div className="px-6 pb-5 pt-0">
+          <div className="flex items-end gap-4 -mt-10 mb-4">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 border-4 border-[var(--bg)] flex items-center justify-center text-white text-2xl font-bold shadow-lg flex-shrink-0">
               {user?.name?.[0] ?? 'U'}
             </div>
-            <div className="mb-1">
-              <h1 className="text-lg font-serif font-bold text-[var(--txt)]">{user?.name}</h1>
-              <p className="text-xs text-[var(--txt3)]">{user?.email}</p>
+            <div className="pb-1 min-w-0">
+              <h1 className="text-lg font-serif font-bold text-[var(--txt)] truncate">{user?.name}</h1>
+              <p className="text-xs text-[var(--txt3)] truncate">{user?.email}</p>
             </div>
-            <div className="ml-auto">
+            <div className="ml-auto pb-1 flex-shrink-0">
               <Link href="/profile"
                 className="flex items-center gap-1.5 text-xs text-[var(--txt2)] bg-[var(--bg2)] hover:bg-[var(--bg3)] px-3 py-1.5 rounded-lg border border-[var(--bdr)] transition-colors">
                 <Settings size={12} /> 프로필 편집
