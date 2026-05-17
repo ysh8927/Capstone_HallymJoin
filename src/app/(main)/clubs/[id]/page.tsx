@@ -10,6 +10,8 @@ import { cn } from '@/lib/utils';
 import ClubDetailTabs from '@/components/clubs/ClubDetailTabs';
 import JoinButton from '@/components/clubs/JoinButton';
 import BookmarkButton from '@/components/clubs/BookmarkButton';
+import { auth } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
 
 interface Props { params: Promise<{ id: string }> }
 
@@ -28,8 +30,20 @@ export default async function ClubDetailPage({ params }: Props) {
   const club = CLUBS.find((c) => c.id === id);
   if (!club) notFound();
 
+  const session = await auth();
+  const userId = (session?.user as any)?.id;
+
   const res = await fetch(`${process.env.NEXTAUTH_URL}/api/posts?clubId=${club.id}`, { cache: 'no-store' });
   const posts = res.ok ? await res.json() : [];
+
+  // 북마크 여부 확인
+  let initialBookmarked = false;
+  if (userId) {
+    const bookmark = await prisma.bookmark.findUnique({
+      where: { userId_clubId: { userId, clubId: club.id } },
+    });
+    initialBookmarked = !!bookmark;
+  }
 
   const normalizedPosts = posts.map((p: any) => ({
     ...p,
@@ -131,7 +145,7 @@ export default async function ClubDetailPage({ params }: Props) {
               </div>
             </div>
 
-            <BookmarkButton clubId={club.id} />
+            <BookmarkButton clubId={club.id} initialBookmarked={initialBookmarked} />
             <JoinButton clubId={club.id} isRecruiting={club.isRecruiting} />
 
             {similarClubs.length > 0 && (
