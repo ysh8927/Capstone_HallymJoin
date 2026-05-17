@@ -19,7 +19,7 @@ function inputCls(err?: boolean) {
 type Tab = 'profile' | 'security' | 'notifications';
 
 export default function ProfilePage() {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   const user = session?.user as any;
 
   const [tab,        setTab]        = useState<Tab>('profile');
@@ -41,22 +41,47 @@ export default function ProfilePage() {
   const [notifNotice,  setNotifNotice]  = useState(true);
   const [notifJoin,    setNotifJoin]    = useState(true);
 
-  function saveProfile() {
+  async function saveProfile() {
     setError('');
     if (!name.trim())       { setError('이름을 입력해주세요.'); return; }
     if (!department.trim()) { setError('학과를 입력해주세요.'); return; }
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+
+    const res = await fetch('/api/profile', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, department, grade }),
+    });
+
+    if (res.ok) {
+      await update({ name, department, grade });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } else {
+      const data = await res.json();
+      setError(data.error || '오류가 발생했습니다.');
+    }
   }
 
-  function savePw() {
+  async function savePw() {
     setPwError('');
     if (!currentPw) { setPwError('현재 비밀번호를 입력해주세요.'); return; }
     if (newPw.length < 8) { setPwError('새 비밀번호는 8자 이상이어야 합니다.'); return; }
     if (newPw !== newPwCf) { setPwError('새 비밀번호가 일치하지 않습니다.'); return; }
-    setPwSaved(true);
-    setCurrentPw(''); setNewPw(''); setNewPwCf('');
-    setTimeout(() => setPwSaved(false), 2500);
+
+    const res = await fetch('/api/profile', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ currentPw, newPw }),
+    });
+
+    if (res.ok) {
+      setPwSaved(true);
+      setCurrentPw(''); setNewPw(''); setNewPwCf('');
+      setTimeout(() => setPwSaved(false), 2500);
+    } else {
+      const data = await res.json();
+      setPwError(data.error || '오류가 발생했습니다.');
+    }
   }
 
   const TABS: { id: Tab; label: string; icon: React.ReactNode }[] = [
@@ -74,16 +99,13 @@ export default function ProfilePage() {
 
       <div className="flex gap-1 p-1 bg-[var(--bg2)] rounded-xl border border-[var(--bdr)] mb-6">
         {TABS.map(({ id, label, icon }) => (
-          <button
-            key={id}
-            onClick={() => setTab(id)}
+          <button key={id} onClick={() => setTab(id)}
             className={cn(
               'flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-medium transition-all cursor-pointer',
               tab === id
                 ? 'bg-[var(--bg)] text-indigo-600 shadow-sm border border-[var(--bdr)]'
                 : 'text-[var(--txt2)] hover:text-[var(--txt)]',
-            )}
-          >
+            )}>
             {icon} {label}
           </button>
         ))}
