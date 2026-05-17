@@ -55,16 +55,16 @@ export default function MyClubsPage() {
 
       <div className="bg-[var(--bg)] rounded-2xl border border-[var(--bdr)] overflow-hidden mb-6">
         <div className="h-24 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
-        <div className="px-6 pb-5 pt-0">
-          <div className="flex items-end gap-4 -mt-10 mb-4">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 border-4 border-[var(--bg)] flex items-center justify-center text-white text-2xl font-bold shadow-lg flex-shrink-0">
+        <div className="px-6 pb-5 pt-4">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 border-4 border-[var(--bg)] flex items-center justify-center text-white text-2xl font-bold shadow-lg flex-shrink-0 -mt-12">
               {user?.name?.[0] ?? 'U'}
             </div>
-            <div className="pb-1 min-w-0">
+            <div className="min-w-0">
               <h1 className="text-lg font-serif font-bold text-[var(--txt)] truncate">{user?.name}</h1>
               <p className="text-xs text-[var(--txt3)] truncate">{user?.email}</p>
             </div>
-            <div className="ml-auto pb-1 flex-shrink-0">
+            <div className="ml-auto flex-shrink-0">
               <Link href="/profile"
                 className="flex items-center gap-1.5 text-xs text-[var(--txt2)] bg-[var(--bg2)] hover:bg-[var(--bg3)] px-3 py-1.5 rounded-lg border border-[var(--bdr)] transition-colors">
                 <Settings size={12} /> 프로필 편집
