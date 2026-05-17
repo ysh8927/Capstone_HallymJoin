@@ -38,6 +38,7 @@ export default function ForgotPasswordPage() {
   const [loading,    setLoading]    = useState(false);
   const [error,      setError]      = useState('');
   const [resendSec,  setResendSec]  = useState(0);
+  const [done,       setDone]       = useState(false);
 
   const email = studentId ? `${studentId}@hallym.ac.kr` : '';
 
@@ -55,21 +56,41 @@ export default function ForgotPasswordPage() {
       return;
     }
     setLoading(true);
-    // TODO: POST /api/auth/forgot-password
-    await new Promise((r) => setTimeout(r, 1000));
-    setLoading(false);
-    setStep(2);
-    startResendTimer();
+    try {
+      const res = await fetch('/api/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setError(data.error || '오류가 발생했습니다.'); return; }
+      setStep(2);
+      startResendTimer();
+    } catch {
+      setError('서버 오류가 발생했습니다.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function verifyCode() {
     setError('');
     if (code.length !== 6) { setError('6자리 인증 코드를 입력해주세요.'); return; }
     setLoading(true);
-    // TODO: POST /api/auth/verify-reset-code
-    await new Promise((r) => setTimeout(r, 700));
-    setLoading(false);
-    setStep(3);
+    try {
+      const res = await fetch('/api/forgot-password', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, code }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setError(data.error || '오류가 발생했습니다.'); return; }
+      setStep(3);
+    } catch {
+      setError('서버 오류가 발생했습니다.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function resetPassword() {
@@ -77,15 +98,23 @@ export default function ForgotPasswordPage() {
     if (password.length < 8) { setError('비밀번호는 8자 이상이어야 합니다.'); return; }
     if (password !== passwordCf) { setError('비밀번호가 일치하지 않습니다.'); return; }
     setLoading(true);
-    // TODO: POST /api/auth/reset-password
-    await new Promise((r) => setTimeout(r, 900));
-    setLoading(false);
-    setStep(3);
-    setError('');
+    try {
+      const res = await fetch('/api/forgot-password', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, code, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setError(data.error || '오류가 발생했습니다.'); return; }
+      setDone(true);
+    } catch {
+      setError('서버 오류가 발생했습니다.');
+    } finally {
+      setLoading(false);
+    }
   }
 
-  // Success state
-  if (step === 3 && !loading && !error) {
+  if (done) {
     return (
       <div className="w-full max-w-sm">
         <div className="bg-[var(--bg)] rounded-2xl border border-[var(--bdr)] shadow-sm overflow-hidden">
@@ -96,10 +125,8 @@ export default function ForgotPasswordPage() {
             </div>
             <h2 className="text-lg font-serif font-bold text-[var(--txt)] mb-2">비밀번호가 변경되었습니다</h2>
             <p className="text-xs text-[var(--txt3)] mb-6">새 비밀번호로 로그인해주세요.</p>
-            <Link
-              href="/login"
-              className="w-full flex items-center justify-center py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-all"
-            >
+            <Link href="/login"
+              className="w-full flex items-center justify-center py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-all">
               로그인하러 가기
             </Link>
           </div>
@@ -122,7 +149,6 @@ export default function ForgotPasswordPage() {
             </p>
           </div>
 
-          {/* Step indicator */}
           <div className="flex items-center justify-center gap-2 mb-6">
             {([1, 2, 3] as Step[]).map((s) => (
               <div key={s} className="flex items-center gap-2">
@@ -139,7 +165,6 @@ export default function ForgotPasswordPage() {
             ))}
           </div>
 
-          {/* ── Step 1: 학번 입력 ── */}
           {step === 1 && (
             <div className="space-y-4">
               <div>
@@ -159,18 +184,14 @@ export default function ForgotPasswordPage() {
                 )}
               </div>
               {error && <ErrorBox msg={error} />}
-              <button
-                onClick={sendCode}
-                disabled={loading || studentId.length < 8}
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-all cursor-pointer disabled:opacity-40"
-              >
+              <button onClick={sendCode} disabled={loading || studentId.length < 8}
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-all cursor-pointer disabled:opacity-40">
                 {loading ? <Spinner /> : <Mail size={14} />}
                 {loading ? '발송 중...' : '인증 코드 발송'}
               </button>
             </div>
           )}
 
-          {/* ── Step 2: 코드 확인 ── */}
           {step === 2 && (
             <div className="space-y-4">
               <div className="flex items-start gap-2 bg-indigo-50 border border-indigo-100 rounded-xl px-3 py-2.5 text-xs text-indigo-700">
@@ -189,11 +210,8 @@ export default function ForgotPasswordPage() {
                 />
               </div>
               {error && <ErrorBox msg={error} />}
-              <button
-                onClick={verifyCode}
-                disabled={loading || code.length !== 6}
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-all cursor-pointer disabled:opacity-40"
-              >
+              <button onClick={verifyCode} disabled={loading || code.length !== 6}
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-all cursor-pointer disabled:opacity-40">
                 {loading ? <Spinner /> : <KeyRound size={14} />}
                 {loading ? '확인 중...' : '코드 확인'}
               </button>
@@ -201,30 +219,22 @@ export default function ForgotPasswordPage() {
                 <button onClick={() => setStep(1)} className="flex items-center gap-1 hover:text-[var(--txt2)] cursor-pointer">
                   <ArrowLeft size={11} /> 학번 변경
                 </button>
-                <button
-                  onClick={sendCode}
-                  disabled={resendSec > 0}
-                  className="text-indigo-400 hover:text-indigo-600 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
-                >
+                <button onClick={sendCode} disabled={resendSec > 0}
+                  className="text-indigo-400 hover:text-indigo-600 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed">
                   {resendSec > 0 ? `재발송 (${resendSec}초)` : '재발송'}
                 </button>
               </div>
             </div>
           )}
 
-          {/* ── Step 3: 새 비밀번호 ── */}
           {step === 3 && (
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-[var(--txt2)] mb-1.5">새 비밀번호</label>
                 <div className="relative">
-                  <input
-                    type={showPw ? 'text' : 'password'}
-                    placeholder="8자 이상"
-                    value={password}
+                  <input type={showPw ? 'text' : 'password'} placeholder="8자 이상" value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className={cn(inputCls(!!error), 'pr-10')}
-                  />
+                    className={cn(inputCls(!!error), 'pr-10')} />
                   <button type="button" onClick={() => setShowPw(!showPw)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--txt3)] hover:text-[var(--txt2)] cursor-pointer">
                     {showPw ? <EyeOff size={14} /> : <Eye size={14} />}
@@ -234,24 +244,17 @@ export default function ForgotPasswordPage() {
               <div>
                 <label className="block text-xs font-semibold text-[var(--txt2)] mb-1.5">비밀번호 확인</label>
                 <div className="relative">
-                  <input
-                    type={showPw ? 'text' : 'password'}
-                    placeholder="비밀번호 재입력"
-                    value={passwordCf}
+                  <input type={showPw ? 'text' : 'password'} placeholder="비밀번호 재입력" value={passwordCf}
                     onChange={(e) => setPasswordCf(e.target.value)}
-                    className={cn(inputCls(!!(passwordCf && password !== passwordCf)), 'pr-10')}
-                  />
+                    className={cn(inputCls(!!(passwordCf && password !== passwordCf)), 'pr-10')} />
                   {passwordCf && password === passwordCf && (
                     <CheckCircle size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500" />
                   )}
                 </div>
               </div>
               {error && <ErrorBox msg={error} />}
-              <button
-                onClick={resetPassword}
-                disabled={loading}
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-all cursor-pointer disabled:opacity-40 mt-1"
-              >
+              <button onClick={resetPassword} disabled={loading}
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-all cursor-pointer disabled:opacity-40 mt-1">
                 {loading ? <Spinner /> : <KeyRound size={14} />}
                 {loading ? '변경 중...' : '비밀번호 변경'}
               </button>
